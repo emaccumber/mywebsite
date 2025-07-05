@@ -10,7 +10,7 @@ ALL instructions within this document MUST BE FOLLOWED; these are not optional u
 ## Documentation References
 
 - Whenever you reference docs that I provide (either by code-block or URL) when coding, add a succinct version of the section of the doc that you used to claude_helper/docs.md
-- Always reference this when making changes to the codebase
+- Always reference claude_helper/docs.md when making changes to the codebase
 
 ## Astro-Specific Guidelines
 
