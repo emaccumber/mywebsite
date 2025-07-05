@@ -36,7 +36,8 @@ ALL instructions within this document MUST BE FOLLOWED, these are not optional u
 
 ## Testing & Validation
 
-- Always run `npm run build` before considering changes complete
+- Do not run `npm run build` after every code change - wait for user instruction
+- When instructed to build, run `npm run build` to test changes
 - Test production builds with `npm run preview` to verify functionality
 - Verify all internal links work correctly with the base path `/mywebsite`
 - Check that any new pages or routes are accessible in the production build

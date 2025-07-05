@@ -1,0 +1,60 @@
+---
+const currentPath = Astro.url.pathname;
+---
+
+<nav>
+  <div class="nav-container">
+    <a href="/mywebsite/" class="site-name">Ethan MacCumber</a>
+    <ul class="nav-links">
+      <li><a href="/mywebsite/photographs" class:list={["nav-link", { active: currentPath === '/mywebsite/photographs/' }]}>Photographs</a></li>
+      <li><a href="/mywebsite/films" class:list={["nav-link", { active: currentPath === '/mywebsite/films/' }]}>Films</a></li>
+      <li><a href="/mywebsite/writing" class:list={["nav-link", { active: currentPath === '/mywebsite/writing/' }]}>Writing</a></li>
+      <li><a href="/mywebsite/information" class:list={["nav-link", { active: currentPath === '/mywebsite/information/' }]}>Information</a></li>
+    </ul>
+  </div>
+</nav>
+
+<style>
+  nav {
+    padding: 1rem 2rem;
+    border-bottom: 1px solid #e5e5e5;
+  }
+
+  .nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .site-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: #000;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-link {
+    text-decoration: none;
+    color: #666;
+    transition: color 0.2s;
+  }
+
+  .nav-link:hover {
+    color: #000;
+  }
+
+  .nav-link.active {
+    color: #000;
+    font-weight: 500;
+  }
+</style>

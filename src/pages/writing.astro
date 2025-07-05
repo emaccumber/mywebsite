@@ -1,0 +1,27 @@
+---
+import Navigation from '../components/Navigation.astro';
+const pageTitle = "Writing";
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{pageTitle} - Ethan MacCumber</title>
+	</head>
+	<body>
+		<Navigation />
+		<h1>{pageTitle}</h1>
+		
+		<p>I am working through Astro's introductory tutorial. This is the third page on my website.</p>
+		
+		<p>This is the very beginning of my blog journey!</p>
+		<ul>
+			<li><a href="/mywebsite/posts/post-1">Post 1</a></li>
+			<li><a href="/mywebsite/posts/post-2">Post 2</a></li>
+			<li><a href="/mywebsite/posts/post-3">Post 3</a></li>
+		</ul>
+	</body>
+</html>

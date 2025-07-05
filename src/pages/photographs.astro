@@ -1,8 +1,6 @@
 ---
-import { Image } from 'astro:assets';
 import Navigation from '../components/Navigation.astro';
-const pageTitle = "Home Page";
-const mediaUrl = import.meta.env.PUBLIC_MEDIA_URL;
+const pageTitle = "Photographs";
 ---
 
 <html lang="en">
@@ -11,18 +9,11 @@ const mediaUrl = import.meta.env.PUBLIC_MEDIA_URL;
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Ethan MacCumber</title>
+		<title>{pageTitle} - Ethan MacCumber</title>
 	</head>
 	<body>
 		<Navigation />
 		<h1>{pageTitle}</h1>
-		
-		<Image 
-			src={`${mediaUrl}/images/featured.jpg`} 
-			alt="Featured image" 
-			width={1200}
-			height={800}
-			format="webp"
-		/>
+		<p>Coming soon...</p>
 	</body>
 </html>
