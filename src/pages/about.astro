@@ -1,5 +1,14 @@
 ---
+const pageTitle = "About Me";
 
+const identity = {
+  firstName: "Ethan",
+  country: "United States",
+  occupation: "Data Scientist",
+  hobbies: ["photography", "running"],
+};
+
+const skills = ["Python", "SQL", "Filmmaking"];
 ---
 
 <html lang="en">
@@ -8,7 +17,17 @@
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+        <title>{pageTitle}</title>
+        <style>
+            h1 {
+                color: rgb(3, 93, 18);
+                font-size: 4rem;
+            }
+            .skill {
+                color: rgb(44, 13, 218);
+                font-weight: bold;
+            }
+        </style>
 	</head>
 	<body>
 <body>
@@ -17,12 +36,25 @@
   <a href="/mywebsite/">Home</a>
   <a href="/mywebsite/blog">Blog</a>
   <a href="/mywebsite/about">About</a>
-
-  <h1>About Me</h1>
+  
+  <h1>{pageTitle}</h1>
   <h2>... and my new Astro site!</h2>
 
   <p>I am working through Astro's introductory tutorial. This is the second page on my website, and it's the first one I built myself!</p>
 
   <p>This site will update as I complete more of the tutorial, so keep checking back and see how my journey is going!</p>
+
+  <p>Here are a few facts about me:</p>
+  <ul>
+    <li>My name is {identity.firstName}.</li>
+    <li>I live in {identity.country} and I work as a {identity.occupation}.</li>
+    {identity.hobbies.length >= 2 &&
+    <li>Two of my hobbies are: {identity.hobbies[0]} and {identity.hobbies[1]}</li>
+    }
+    </ul>
+    <p>My skills are:</p>
+    <ul>
+        {skills.map((skill) => <li class="skill">{skill}</li>)}
+    </ul>
 </body>	</body>
 </html>

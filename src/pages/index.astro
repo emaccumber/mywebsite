@@ -1,5 +1,7 @@
 ---
-
+import { Image } from 'astro:assets';
+const pageTitle = "Home Page";
+const mediaUrl = import.meta.env.PUBLIC_MEDIA_URL;
 ---
 
 <html lang="en">
@@ -11,9 +13,17 @@
 		<title>Astro</title>
 	</head>
 	<body>
-		<h1>Ethan's Astro Site</h1>
+		<h1>{pageTitle}</h1>
 		<a href="/mywebsite/">Home</a>
 		<a href="/mywebsite/blog">Blog</a>
 		<a href="/mywebsite/about">About</a>
+		
+		<Image 
+			src={`${mediaUrl}/images/featured.jpg`} 
+			alt="Featured image" 
+			width={1200}
+			height={800}
+			format="webp"
+		/>
 	</body>
 </html>
