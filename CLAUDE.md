@@ -1,6 +1,6 @@
 # Project Instructions
 
-ALL instructions within this document MUST BE FOLLOWED, these are not optional unless explicitly stated.
+ALL instructions within this document MUST BE FOLLOWED; these are not optional unless explicitly stated.
 
 ## Programming Principles
 
