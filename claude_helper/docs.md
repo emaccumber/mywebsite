@@ -84,3 +84,32 @@ Source: Astro Docs - Components
 - MDX extends Markdown with component support
 
 Source: Astro Docs - MDX Integration
+
+## Font Setup with Fontsource
+
+### Installing Fonts
+- Install font packages via npm: `npm install @fontsource/[font-name]`
+- Import specific weights to optimize loading: `@fontsource/inter/300.css`
+- Use in layouts for global application
+
+### Implementation Pattern
+- Create a BaseLayout component
+- Import font in layout component script
+- Apply font family in global CSS with system font fallbacks
+- All pages using the layout automatically inherit the font
+
+### Example Setup
+```astro
+---
+// BaseLayout.astro
+import '@fontsource/inter/300.css';
+---
+<style is:global>
+  html {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 300;
+  }
+</style>
+```
+
+Source: Astro Docs - Fonts Guide

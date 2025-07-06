@@ -1,5 +1,5 @@
 ---
-import Navigation from '../components/Navigation.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
 const pageTitle = "Information";
 
 const identity = {
@@ -12,27 +12,8 @@ const identity = {
 const skills = ["Python", "SQL", "Filmmaking"];
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{pageTitle} - Ethan MacCumber</title>
-		<style>
-			h1 {
-				color: rgb(3, 93, 18);
-				font-size: 4rem;
-			}
-			.skill {
-				color: rgb(44, 13, 218);
-				font-weight: bold;
-			}
-		</style>
-	</head>
-	<body>
-		<Navigation />
-		<h1>{pageTitle}</h1>
+<BaseLayout pageTitle={pageTitle}>
+	<h1>{pageTitle}</h1>
 		<h2>... and my new Astro site!</h2>
 
 		<p>I am working through Astro's introductory tutorial. This is the second page on my website, and it's the first one I built myself!</p>
@@ -51,5 +32,15 @@ const skills = ["Python", "SQL", "Filmmaking"];
 		<ul>
 			{skills.map((skill) => <li class="skill">{skill}</li>)}
 		</ul>
-	</body>
-</html>
+</BaseLayout>
+
+<style>
+	h1 {
+		color: rgb(3, 93, 18);
+		font-size: 4rem;
+	}
+	.skill {
+		color: rgb(44, 13, 218);
+		font-weight: bold;
+	}
+</style>

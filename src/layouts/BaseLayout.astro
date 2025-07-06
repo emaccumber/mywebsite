@@ -1,0 +1,75 @@
+---
+import '@fontsource/inter/400.css';
+import Navigation from '../components/Navigation.astro';
+
+export interface Props {
+  pageTitle?: string;
+}
+
+const { pageTitle } = Astro.props;
+const title = pageTitle ? `${pageTitle} - Ethan MacCumber` : 'Ethan MacCumber';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <Navigation />
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>
+
+<style is:global>
+  html {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+  }
+
+  main {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 400;
+    line-height: 1.2;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    margin: 1rem 0;
+  }
+
+  h2 {
+    font-size: 2rem;
+    margin: 1rem 0;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  p {
+    margin: 1rem 0;
+  }
+
+  ul, ol {
+    margin: 1rem 0;
+  }
+</style>
