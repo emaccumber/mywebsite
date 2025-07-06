@@ -5,13 +5,36 @@ const mediaUrl = import.meta.env.PUBLIC_MEDIA_URL;
 ---
 
 <BaseLayout>
-	<h1>Home Page</h1>
-	
-	<Image 
-		src={`${mediaUrl}/images/featured.jpg`} 
-		alt="Featured image" 
-		width={1200}
-		height={800}
-		format="webp"
-	/>
+	<div class="hero-container">
+		<Image 
+			src={`${mediaUrl}/images/featured.jpg`} 
+			alt="Featured image" 
+			width={2400}
+			height={1600}
+			format="webp"
+			class="hero-image"
+		/>
+	</div>
 </BaseLayout>
+
+<style>
+	.hero-container {
+		position: absolute;
+		top: calc(60px + 1rem); /* below navigation menu with padding */
+		left: 1rem;
+		right: 1rem;
+		bottom: 1rem;
+		display: flex;
+		justify-content: center;
+		align-items: flex-start;
+	}
+
+	.hero-image {
+		max-height: 100%;
+		max-width: 100%;
+		width: auto;
+		height: auto;
+		object-fit: contain;
+		object-position: top;
+	}
+</style>
