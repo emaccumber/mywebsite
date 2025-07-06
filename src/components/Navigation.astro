@@ -6,10 +6,11 @@ const currentPath = Astro.url.pathname;
   <div class="nav-container">
     <a href="/mywebsite/" class="site-name">Ethan MacCumber</a>
     <ul class="nav-links">
-      <li><a href="/mywebsite/photographs" class:list={["nav-link", { active: currentPath === '/mywebsite/photographs/' }]}>Photographs</a></li>
-      <li><a href="/mywebsite/films" class:list={["nav-link", { active: currentPath === '/mywebsite/films/' }]}>Films</a></li>
-      <li><a href="/mywebsite/writing" class:list={["nav-link", { active: currentPath === '/mywebsite/writing/' }]}>Writing</a></li>
-      <li><a href="/mywebsite/information" class:list={["nav-link", { active: currentPath === '/mywebsite/information/' }]}>Information</a></li>
+      <li><a href="/mywebsite/photographs" class:list={["nav-link", { active: currentPath === '/mywebsite/photographs/' }]}>photographs</a></li>
+      <li><a href="/mywebsite/films" class:list={["nav-link", { active: currentPath === '/mywebsite/films/' }]}>films</a></li>
+      <li><a href="/mywebsite/writing" class:list={["nav-link", { active: currentPath === '/mywebsite/writing/' }]}>writing</a></li>
+      <li><a href="/mywebsite/information" class:list={["nav-link", { active: currentPath === '/mywebsite/information/' }]}>information</a></li>
+      <li><button id="themeToggle" class="theme-toggle nav-link">dark</button></li>
     </ul>
   </div>
 </nav>
@@ -17,22 +18,32 @@ const currentPath = Astro.url.pathname;
 <style>
   nav {
     padding: 1rem 2rem;
-    border-bottom: 1px solid #e5e5e5;
   }
 
   .nav-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
   }
 
   .site-name {
-    font-size: 1.25rem;
-    font-weight: 600;
+    font-size: 1.4rem;
+    font-weight: 400;
     text-decoration: none;
+    color: #666;
+    transition: color 0.2s;
+  }
+
+  .site-name:hover {
     color: #000;
+  }
+
+  html.dark .site-name {
+    color: #ccc;
+  }
+
+  html.dark .site-name:hover {
+    color: #fff;
   }
 
   .nav-links {
@@ -47,6 +58,7 @@ const currentPath = Astro.url.pathname;
     text-decoration: none;
     color: #666;
     transition: color 0.2s;
+    font-size: 1.2rem;
   }
 
   .nav-link:hover {
@@ -57,4 +69,64 @@ const currentPath = Astro.url.pathname;
     color: #000;
     font-weight: 500;
   }
+
+  html.dark .nav-link {
+    color: #ccc;
+  }
+
+  html.dark .nav-link:hover {
+    color: #fff;
+  }
+
+  html.dark .nav-link.active {
+    color: #fff;
+  }
+
+  .theme-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    vertical-align: baseline;
+    line-height: inherit;
+  }
 </style>
+
+<script>
+  function updateToggleText() {
+    const toggle = document.getElementById('themeToggle');
+    if (toggle) {
+      const isDark = document.documentElement.classList.contains('dark');
+      toggle.textContent = isDark ? 'light' : 'dark';
+    }
+  }
+
+  function toggleTheme() {
+    const isDark = document.documentElement.classList.contains('dark');
+    const newTheme = isDark ? 'light' : 'dark';
+    
+    document.documentElement.classList.toggle('dark', newTheme === 'dark');
+    localStorage.setItem('theme', newTheme);
+    updateToggleText();
+  }
+
+  // Initialize toggle text and add click listener
+  document.addEventListener('DOMContentLoaded', () => {
+    updateToggleText();
+    
+    const toggle = document.getElementById('themeToggle');
+    if (toggle) {
+      toggle.addEventListener('click', toggleTheme);
+    }
+  });
+
+  // Listen for system theme changes
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    if (!localStorage.getItem('theme')) {
+      const theme = e.matches ? 'dark' : 'light';
+      document.documentElement.classList.toggle('dark', theme === 'dark');
+      updateToggleText();
+    }
+  });
+</script>

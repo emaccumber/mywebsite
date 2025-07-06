@@ -113,3 +113,32 @@ import '@fontsource/inter/300.css';
 ```
 
 Source: Astro Docs - Fonts Guide
+
+## Dark Mode Implementation
+
+### Theme Toggle Setup
+- Add theme toggle button to navigation as regular menu item
+- Use JavaScript to detect system preference and localStorage
+- Toggle between "light" and "dark" text based on current theme
+- Script handles theme persistence and system preference detection
+
+### CSS Dark Mode Styling
+- Use `html.dark` class to target dark mode styles
+- Apply dark background (#0a0a0a) and light text (#ffffff) for dark mode
+- Maintain monochrome color scheme with appropriate contrast
+- Include smooth transitions for theme switching
+
+### Implementation Pattern
+```css
+html {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+html.dark {
+  background-color: #0a0a0a;
+  color: #ffffff;
+}
+```
+
+Source: Astro Docs - Dark Mode Tutorial

@@ -56,6 +56,10 @@ const formattedDate = pubDate.toLocaleDateString('en-US', {
     margin: 0.5rem 0 1rem;
   }
 
+  html.dark .meta {
+    color: #999;
+  }
+
   .tags {
     margin: 1rem 0;
   }
@@ -63,10 +67,16 @@ const formattedDate = pubDate.toLocaleDateString('en-US', {
   .tag {
     display: inline-block;
     background: #f0f0f0;
+    color: #000;
     padding: 0.25rem 0.75rem;
     border-radius: 0.25rem;
     margin-right: 0.5rem;
     font-size: 0.875rem;
+  }
+
+  html.dark .tag {
+    background: #333;
+    color: #fff;
   }
 
   .content {
@@ -104,9 +114,15 @@ const formattedDate = pubDate.toLocaleDateString('en-US', {
 
   .content :global(code) {
     background: #f5f5f5;
+    color: #000;
     padding: 0.125rem 0.25rem;
     border-radius: 0.25rem;
     font-size: 0.875em;
+  }
+
+  html.dark .content :global(code) {
+    background: #333;
+    color: #fff;
   }
 
   .content :global(pre) {
@@ -114,6 +130,10 @@ const formattedDate = pubDate.toLocaleDateString('en-US', {
     padding: 1rem;
     border-radius: 0.5rem;
     overflow-x: auto;
+  }
+
+  html.dark .content :global(pre) {
+    background: #333;
   }
 
   .content :global(pre code) {
