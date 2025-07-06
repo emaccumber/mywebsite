@@ -29,7 +29,6 @@ const formattedDate = pubDate.toLocaleDateString('en-US', {
     <h1>{frontmatter.title}</h1>
     <p class="meta">
       <time datetime={pubDate.toISOString()}>{formattedDate}</time>
-      by {frontmatter.author}
     </p>
     {frontmatter.tags && (
       <div class="tags">
