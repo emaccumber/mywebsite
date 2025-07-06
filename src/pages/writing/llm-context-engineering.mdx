@@ -2,7 +2,6 @@
 title: 'Context Engineering for Large Language Models: A Practical Guide'
 pubDate: 2024-11-05
 description: 'Best practices for crafting effective prompts and managing context windows in LLM applications.'
-author: 'Ethan MacCumber'
 tags: ["AI", "data science"]
 layout: '../../layouts/BlogPostLayout.astro'
 ---
@@ -13,8 +12,11 @@ As large language models become central to more applications, context engineerin
 
 The foundation of good context engineering is clarity. Your prompt should explicitly state what you want the model to do, in what format, and with what constraints.
 
-**Bad:** "Analyze this data"  
-**Good:** "Analyze the following sales data and provide three key insights in bullet point format, focusing on trends over the last quarter."
+| Prompt Quality | Example | Issues |
+|---|---|---|
+| **Poor** | "Analyze this data" | Vague, no format specified |
+| **Better** | "Analyze the following sales data and provide three key insights in bullet point format, focusing on trends over the last quarter." | Specific task, format, and scope |
+| **Best** | "You are a senior data analyst. Analyze the Q4 sales data below and provide exactly 3 actionable insights in bullet points. Focus on revenue trends, customer segments, and seasonal patterns. Include specific numbers where relevant." | Clear role, explicit constraints, detailed requirements |
 
 ## Structure Your Context Hierarchy
 
@@ -32,6 +34,17 @@ Context windows are finite. Prioritize:
 - Task-specific examples over general knowledge
 - Structured data over verbose explanations
 
+### Token Estimation Quick Reference
+
+| Content Type | Approximate Tokens | Best Use |
+|---|---|---|
+| Simple instruction | 10-50 | Core system prompts |
+| Code example | 100-500 | Few-shot demonstrations |
+| Documentation chunk | 500-2000 | Reference material |
+| Full conversation | 1000-8000 | Context maintenance |
+
+> **Pro tip:** Use tools like [OpenAI's tiktoken](https://github.com/openai/tiktoken) to accurately count tokens before hitting context limits.
+
 ## Use Examples Effectively
 
 Few-shot examples are powerful but expensive. Choose examples that:
@@ -39,8 +52,40 @@ Few-shot examples are powerful but expensive. Choose examples that:
 - Demonstrate the exact output format you want
 - Show reasoning patterns, not just correct answers
 
+### Example Template Structure
+
+```markdown
+## Task: [Brief description]
+
+**Input:**
+[Your input data/question here]
+
+**Expected Output:**
+[Exact format you want]
+
+**Reasoning:**
+[Step-by-step thought process]
+```
+
+This template ensures consistency and helps the model understand both the **what** and the **how** of your desired response.
+
 ## Test and Iterate
 
 Context engineering is empirical. What works for one model or task may fail for another. Build systematic evaluation processes and be prepared to refine your approach based on real-world performance.
 
-The best context engineering combines technical precision with deep understanding of your specific domain and use case.
+### Evaluation Framework
+
+1. **Baseline Testing** - Start with simple prompts
+2. **A/B Comparison** - Test variations systematically  
+3. **Edge Case Analysis** - Identify failure modes
+4. **Performance Metrics** - Track accuracy, consistency, latency
+
+> 💡 **Remember:** The best context engineering combines technical precision with deep understanding of your specific domain and use case.
+
+---
+
+## Additional Resources
+
+- [Anthropic's Prompt Engineering Guide](https://docs.anthropic.com/claude/docs/prompt-engineering)
+- [OpenAI's Best Practices](https://platform.openai.com/docs/guides/prompt-engineering)
+- [LangChain Prompt Templates](https://python.langchain.com/docs/modules/model_io/prompts/)
