@@ -5,7 +5,12 @@ const currentPath = Astro.url.pathname;
 <nav>
   <div class="nav-container">
     <a href="/mywebsite/" class="site-name">Ethan MacCumber</a>
-    <ul class="nav-links">
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
       <li><a href="/mywebsite/photographs" class:list={["nav-link", { active: currentPath === '/mywebsite/photographs/' }]}>photographs</a></li>
       <li><a href="/mywebsite/films" class:list={["nav-link", { active: currentPath === '/mywebsite/films/' }]}>films</a></li>
       <li><a href="/mywebsite/writing" class:list={["nav-link", { active: currentPath === '/mywebsite/writing/' }]}>writing</a></li>
@@ -17,7 +22,15 @@ const currentPath = Astro.url.pathname;
 
 <style>
   nav {
-    padding: 1rem 2rem;
+    padding: 1rem 1.5rem;
+    position: relative;
+    z-index: 100;
+    background: white;
+    transition: background-color 0.3s ease;
+  }
+
+  html.dark nav {
+    background: #0a0a0a;
   }
 
   .nav-container {
@@ -93,6 +106,110 @@ const currentPath = Astro.url.pathname;
     width: 2.5rem;
     text-align: left;
   }
+
+  /* Hamburger menu styles */
+  .hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    position: relative;
+    z-index: 1001;
+  }
+
+  .hamburger span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: #666;
+    position: absolute;
+    left: 0;
+    transition: all 0.3s ease;
+  }
+
+  html.dark .hamburger span {
+    background: #ccc;
+  }
+
+  .hamburger span:nth-child(1) {
+    top: 4px;
+  }
+
+  .hamburger span:nth-child(2) {
+    top: 11px;
+  }
+
+  .hamburger span:nth-child(3) {
+    bottom: 4px;
+  }
+
+  .hamburger.active span:nth-child(1) {
+    transform: rotate(45deg);
+    top: 11px;
+  }
+
+  .hamburger.active span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg);
+    bottom: 11px;
+  }
+
+  /* Mobile styles */
+  @media (max-width: 768px) {
+    nav {
+      padding: 1rem 1.5rem;
+    }
+
+    .nav-container {
+      flex-wrap: wrap;
+    }
+
+    .hamburger {
+      display: block;
+    }
+
+    .nav-links {
+      position: static;
+      width: 100%;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, margin 0.3s ease;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .nav-links.open {
+      max-height: 400px;
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .nav-links li {
+      margin-bottom: 0.5rem;
+      width: auto;
+      text-align: right;
+    }
+
+    .nav-links li:last-child {
+      margin-bottom: 0;
+    }
+
+    .nav-link,
+    .theme-toggle {
+      font-size: 1rem;
+      width: auto;
+    }
+  }
 </style>
 
 <script>
@@ -120,6 +237,34 @@ const currentPath = Astro.url.pathname;
     const toggle = document.getElementById('themeToggle');
     if (toggle) {
       toggle.addEventListener('click', toggleTheme);
+    }
+
+    // Hamburger menu functionality
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('navLinks');
+    
+    if (hamburger && navLinks) {
+      hamburger.addEventListener('click', () => {
+        hamburger.classList.toggle('active');
+        navLinks.classList.toggle('open');
+      });
+
+      // Close menu when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+          hamburger.classList.remove('active');
+          navLinks.classList.remove('open');
+        }
+      });
+
+      // Close menu when clicking a link
+      const links = navLinks.querySelectorAll('a');
+      links.forEach(link => {
+        link.addEventListener('click', () => {
+          hamburger.classList.remove('active');
+          navLinks.classList.remove('open');
+        });
+      });
     }
   });
 

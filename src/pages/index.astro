@@ -19,11 +19,9 @@ const mediaUrl = import.meta.env.PUBLIC_MEDIA_URL;
 
 <style>
 	.hero-container {
-		position: absolute;
-		top: calc(60px + 1rem); /* below navigation menu with padding */
-		left: 1rem;
-		right: 1rem;
-		bottom: 1rem;
+		position: relative;
+		height: calc(100vh - 60px - 2rem);
+		margin: 0 -0.5rem; /* negative margin to offset parent padding */
 		display: flex;
 		justify-content: center;
 		align-items: flex-start;
