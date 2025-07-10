@@ -1,0 +1,148 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const albums = await getCollection('photographs');
+  return albums.map((album) => ({
+    params: { album: album.id },
+    props: { album }
+  }));
+}
+
+const { album } = Astro.props;
+const mediaUrl = import.meta.env.PUBLIC_MEDIA_URL;
+const albumPath = `${mediaUrl}/images/photographs/${album.id}`;
+
+// Get descriptions from the album data
+const descriptions = album.data.descriptions || {};
+
+// Generate array of image numbers based on descriptions
+// In production, you might want to check actual files or have a count property
+const imageNumbers = Object.keys(descriptions).sort((a, b) => parseInt(a) - parseInt(b));
+---
+
+<BaseLayout pageTitle={album.data.title}>
+  <div class="gallery-header">
+    <h1>{album.data.title}</h1>
+    <a href="/mywebsite/photographs" class="back-link">← Back to albums</a>
+  </div>
+  
+  <div class="gallery">
+    {imageNumbers.map((num) => (
+      <div class="photo-container" data-image={num}>
+        <Image 
+          src={`${albumPath}/${num}.jpg`}
+          alt={`${album.data.title} - Photo ${num}`}
+          width={1600}
+          height={1200}
+          format="webp"
+          class="gallery-image"
+          loading={parseInt(num) > 2 ? "lazy" : "eager"}
+        />
+        <p class="photo-description">{descriptions[num]}</p>
+      </div>
+    ))}
+  </div>
+</BaseLayout>
+
+<style>
+  .gallery-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 400;
+    margin: 0;
+  }
+
+  .back-link {
+    color: #666;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .back-link:hover {
+    color: #000;
+  }
+
+  html.dark .back-link {
+    color: #999;
+  }
+
+  html.dark .back-link:hover {
+    color: #fff;
+  }
+
+  .gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .photo-container {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .gallery-image {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .photo-description {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0.5rem 1rem;
+    margin: 0;
+    font-size: 0.875rem;
+    backdrop-filter: blur(10px);
+    max-width: 300px;
+  }
+
+  html.dark .photo-description {
+    background: rgba(0, 0, 0, 0.9);
+    color: #fff;
+  }
+
+  @media (max-width: 768px) {
+    .photo-description {
+      position: static;
+      background: none;
+      padding: 0.5rem 0;
+      backdrop-filter: none;
+      max-width: none;
+      text-align: right;
+      color: #666;
+    }
+
+    html.dark .photo-description {
+      color: #999;
+    }
+  }
+</style>
+
+<script>
+  // Simple click to advance functionality
+  document.addEventListener('DOMContentLoaded', () => {
+    const photos = document.querySelectorAll('.photo-container');
+    
+    photos.forEach((photo, index) => {
+      photo.addEventListener('click', () => {
+        if (index < photos.length - 1) {
+          photos[index + 1].scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+  });
+</script>

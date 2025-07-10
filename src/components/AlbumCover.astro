@@ -1,0 +1,65 @@
+---
+import { Image } from 'astro:assets';
+
+export interface Props {
+  title: string;
+  albumId: string;
+  mediaUrl: string;
+}
+
+const { title, albumId, mediaUrl } = Astro.props;
+const coverUrl = `${mediaUrl}/images/photographs/${albumId}/cover.jpg`;
+---
+
+<a href={`/mywebsite/photographs/${albumId}`} class="album-cover">
+  <div class="image-container">
+    <Image 
+      src={coverUrl}
+      alt={`${title} album cover`}
+      width={800}
+      height={800}
+      format="webp"
+      class="cover-image"
+    />
+  </div>
+  <h3 class="album-title">{title}</h3>
+</a>
+
+<style>
+  .album-cover {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: opacity 0.2s ease;
+  }
+
+  .album-cover:hover {
+    opacity: 0.8;
+  }
+
+  .image-container {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .cover-image {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: bottom center;
+  }
+
+  .album-title {
+    margin-top: 0.5rem;
+    font-size: 1rem;
+    font-weight: 400;
+    text-align: center;
+  }
+</style>

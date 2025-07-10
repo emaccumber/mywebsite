@@ -1,0 +1,44 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AlbumCover from '../../components/AlbumCover.astro';
+
+const mediaUrl = import.meta.env.PUBLIC_MEDIA_URL;
+const albums = await getCollection('photographs');
+const sortedAlbums = albums.sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout pageTitle="Photographs">
+  <div class="albums-grid">
+    {sortedAlbums.map((album) => (
+      <AlbumCover 
+        title={album.data.title}
+        albumId={album.id}
+        mediaUrl={mediaUrl}
+      />
+    ))}
+  </div>
+</BaseLayout>
+
+<style>
+  .albums-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 3rem 4rem;
+    padding: 3rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 768px) {
+    .albums-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .albums-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>
