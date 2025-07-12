@@ -1,72 +1,41 @@
 ---
 import { Image } from 'astro:assets';
-import Navigation from '../components/Navigation.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
 const mediaUrl = import.meta.env.PUBLIC_MEDIA_URL;
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
-    <title>Ethan MacCumber</title>
-    <style is:global>
-      @import '@fontsource/inter/400.css';
-      
-      html {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        font-weight: 400;
-        font-size: 16px;
-        line-height: 1.6;
-        background-color: #ffffff;
-        color: #000000;
-        transition: background-color 0.3s ease, color 0.3s ease;
-      }
-      
-      html.dark {
-        background-color: #0a0a0a;
-        color: #ffffff;
-      }
-      
-      body {
-        margin: 0;
-        padding: 0;
-        height: 100vh;
-        overflow: hidden;
-      }
-    </style>
-    <script is:inline>
-      // Prevent dark mode flicker
-      const storedTheme = localStorage.getItem('theme');
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      const theme = storedTheme || systemTheme;
-      
-      if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
-      }
-    </script>
-  </head>
-  <body>
-    <Navigation />
-    <div class="hero-container">
-      <Image 
-        src={`${mediaUrl}/images/featured.jpg`} 
-        alt="Featured image" 
-        width={2400}
-        height={1600}
-        format="webp"
-        class="hero-image"
-      />
-    </div>
-  </body>
-</html>
+<BaseLayout>
+  <div class="hero-container">
+    <Image 
+      src={`${mediaUrl}/images/featured.jpg`} 
+      alt="Featured image" 
+      width={2400}
+      height={1600}
+      format="webp"
+      class="hero-image"
+    />
+  </div>
+</BaseLayout>
+
+<style is:global>
+  /* Override body styles for home page only */
+  body.homepage {
+    overflow: hidden !important;
+  }
+  
+  body.homepage main {
+    padding: 0 !important;
+  }
+</style>
 
 <style>
 	.hero-container {
-		height: calc(100vh - 60px);
+		position: fixed;
+		top: 60px; /* Height of navigation */
+		left: 0;
+		right: 0;
+		bottom: 0;
 		padding: 0.3rem;
-		box-sizing: border-box;
 		display: flex;
 		justify-content: center;
 		align-items: flex-start;
@@ -83,7 +52,12 @@ const mediaUrl = import.meta.env.PUBLIC_MEDIA_URL;
 
 	@media (max-width: 768px) {
 		.hero-container {
-			height: calc(100vh - 48px);
+			top: 48px; /* Adjust for mobile nav height */
 		}
 	}
 </style>
+
+<script>
+  // Add homepage class to body
+  document.body.classList.add('homepage');
+</script>

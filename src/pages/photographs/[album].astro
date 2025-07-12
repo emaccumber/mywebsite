@@ -17,132 +17,277 @@ const albumPath = `${mediaUrl}/images/photographs/${album.id}`;
 
 // Get descriptions from the album data
 const descriptions = album.data.descriptions || {};
+const albumContent = album.data.content || '';
 
 // Generate array of image numbers based on descriptions
-// In production, you might want to check actual files or have a count property
 const imageNumbers = Object.keys(descriptions).sort((a, b) => parseInt(a) - parseInt(b));
 ---
 
 <BaseLayout pageTitle={album.data.title}>
-  <div class="gallery-header">
-    <h1>{album.data.title}</h1>
-    <a href="/mywebsite/photographs" class="back-link">← Back to albums</a>
-  </div>
+  <!-- Back to albums button -->
+  <a href="/mywebsite/photographs" class="back-button" aria-label="Back to albums">&lt;&lt;&lt;</a>
   
-  <div class="gallery">
-    {imageNumbers.map((num) => (
-      <div class="photo-container" data-image={num}>
+  <!-- Photo viewer -->
+  <div class="photo-viewer" id="photoViewer">
+    {imageNumbers.map((num, index) => (
+      <div class="photo-container" data-image={num} data-index={index} style={index === 0 ? '' : 'display: none;'}>
         <Image 
           src={`${albumPath}/${num}.jpg`}
           alt={`${album.data.title} - Photo ${num}`}
-          width={1600}
-          height={1200}
+          width={2400}
+          height={1800}
           format="webp"
           class="gallery-image"
-          loading={parseInt(num) > 2 ? "lazy" : "eager"}
+          loading={index < 2 ? "eager" : "lazy"}
         />
         <p class="photo-description">{descriptions[num]}</p>
       </div>
     ))}
   </div>
+
+  <!-- Navigation controls -->
+  <button class="nav-button nav-prev" id="navPrev" aria-label="Previous image" disabled>&lt;</button>
+  <button class="nav-button nav-next" id="navNext" aria-label="Next image">&gt;</button>
+
+  <!-- Album content (if any) -->
+  {albumContent && (
+    <div class="album-content">
+      <div>{albumContent}</div>
+    </div>
+  )}
 </BaseLayout>
 
 <style>
-  .gallery-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-
-  h1 {
-    font-size: 2rem;
-    font-weight: 400;
-    margin: 0;
-  }
-
-  .back-link {
-    color: #666;
+  /* Back button */
+  .back-button {
+    position: fixed;
+    top: 4rem;
+    left: 1.5rem;
+    z-index: 50;
     text-decoration: none;
+    color: #666;
+    font-size: 1.5rem;
+    line-height: 1;
     transition: color 0.2s ease;
   }
 
-  .back-link:hover {
+  .back-button:hover {
     color: #000;
   }
 
-  html.dark .back-link {
+  html.dark .back-button {
     color: #999;
   }
 
-  html.dark .back-link:hover {
+  html.dark .back-button:hover {
     color: #fff;
   }
 
-  .gallery {
+  /* Photo viewer */
+  .photo-viewer {
+    min-height: calc(100vh - 120px);
     display: flex;
-    flex-direction: column;
-    gap: 3rem;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem;
   }
 
   .photo-container {
-    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 90vw;
     cursor: pointer;
   }
 
   .gallery-image {
-    width: 100%;
+    max-width: 100%;
+    max-height: calc(100vh - 200px);
+    width: auto;
     height: auto;
     display: block;
   }
 
   .photo-description {
-    position: absolute;
-    bottom: 1rem;
-    right: 1rem;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 0.5rem 1rem;
-    margin: 0;
+    margin-top: 0.5rem;
     font-size: 0.875rem;
-    backdrop-filter: blur(10px);
+    color: #666;
+    text-align: right;
+    align-self: flex-end;
     max-width: 300px;
   }
 
   html.dark .photo-description {
-    background: rgba(0, 0, 0, 0.9);
+    color: #999;
+  }
+
+  /* Navigation buttons */
+  .nav-button {
+    position: fixed;
+    bottom: 2rem;
+    background: none;
+    border: none;
+    font-size: 3rem;
+    color: #666;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: color 0.2s ease, opacity 0.3s ease;
+    z-index: 50;
+  }
+
+  .nav-button:hover:not(:disabled) {
+    color: #000;
+  }
+
+  .nav-button:disabled {
+    color: #ccc;
+    cursor: default;
+  }
+
+  html.dark .nav-button {
+    color: #999;
+  }
+
+  html.dark .nav-button:hover:not(:disabled) {
     color: #fff;
   }
 
+  html.dark .nav-button:disabled {
+    color: #444;
+  }
+
+  .nav-prev {
+    left: 2rem;
+  }
+
+  .nav-next {
+    right: 2rem;
+  }
+
+  .nav-button.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Album content */
+  .album-content {
+    max-width: 800px;
+    margin: 4rem auto;
+    padding: 0 2rem 4rem;
+    line-height: 1.6;
+  }
+
+  .album-content h2 {
+    font-size: 1.5rem;
+    margin: 2rem 0 1rem;
+  }
+
+  .album-content p {
+    margin: 1rem 0;
+  }
+
+  /* Mobile adjustments */
   @media (max-width: 768px) {
-    .photo-description {
-      position: static;
-      background: none;
-      padding: 0.5rem 0;
-      backdrop-filter: none;
-      max-width: none;
-      text-align: right;
-      color: #666;
+    .photo-viewer {
+      padding: 1rem;
     }
 
-    html.dark .photo-description {
-      color: #999;
+    .gallery-image {
+      max-height: calc(100vh - 180px);
+    }
+
+    .photo-description {
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+    }
+
+    .nav-button {
+      font-size: 2rem;
+      bottom: 1rem;
+    }
+
+    .nav-prev {
+      left: 1rem;
+    }
+
+    .nav-next {
+      right: 1rem;
+    }
+
+    .back-button {
+      left: 1rem;
+      top: 3.5rem;
     }
   }
 </style>
 
 <script>
-  // Simple click to advance functionality
   document.addEventListener('DOMContentLoaded', () => {
     const photos = document.querySelectorAll('.photo-container');
-    
-    photos.forEach((photo, index) => {
-      photo.addEventListener('click', () => {
-        if (index < photos.length - 1) {
-          photos[index + 1].scrollIntoView({ behavior: 'smooth' });
+    const prevBtn = document.getElementById('navPrev');
+    const nextBtn = document.getElementById('navNext');
+    const photoViewer = document.getElementById('photoViewer');
+    let currentIndex = 0;
+
+    // Function to show specific photo
+    function showPhoto(index) {
+      photos.forEach((photo, i) => {
+        photo.style.display = i === index ? '' : 'none';
+      });
+      currentIndex = index;
+      
+      // Update button states
+      prevBtn.disabled = index === 0;
+      nextBtn.disabled = index === photos.length - 1;
+    }
+
+    // Navigate to next photo
+    function nextPhoto() {
+      if (currentIndex < photos.length - 1) {
+        showPhoto(currentIndex + 1);
+      }
+    }
+
+    // Navigate to previous photo
+    function prevPhoto() {
+      if (currentIndex > 0) {
+        showPhoto(currentIndex - 1);
+      }
+    }
+
+    // Button click handlers
+    prevBtn.addEventListener('click', prevPhoto);
+    nextBtn.addEventListener('click', nextPhoto);
+
+    // Click on image to advance
+    photos.forEach((photo) => {
+      photo.addEventListener('click', nextPhoto);
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') {
+        prevPhoto();
+      } else if (e.key === 'ArrowRight') {
+        nextPhoto();
+      }
+    });
+
+    // Scroll-based visibility for navigation buttons
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          prevBtn.classList.remove('hidden');
+          nextBtn.classList.remove('hidden');
+        } else {
+          prevBtn.classList.add('hidden');
+          nextBtn.classList.add('hidden');
         }
       });
+    }, {
+      threshold: 0.1
     });
+
+    observer.observe(photoViewer);
   });
 </script>

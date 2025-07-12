@@ -6,6 +6,8 @@ const photographs = defineCollection({
     title: z.string(),
     order: z.number(),
     coverImage: z.string().default('cover.jpg'),
+    descriptions: z.record(z.string()).optional(),
+    content: z.string().optional(),
   }),
 });
 
