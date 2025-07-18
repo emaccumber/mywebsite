@@ -142,3 +142,51 @@ html.dark {
 ```
 
 Source: Astro Docs - Dark Mode Tutorial
+
+## BaseLayout Full Viewport Mode
+
+### Purpose
+- Enables pages to use full viewport height without scrolling
+- Uses CSS Grid for clean layout without hardcoded navbar heights
+- Maintains consistent navigation across all pages
+
+### Implementation
+```astro
+---
+// In BaseLayout.astro
+export interface Props {
+  pageTitle?: string;
+  fullViewport?: boolean;
+}
+const { pageTitle, fullViewport = false } = Astro.props;
+---
+<body class:list={[{ 'full-viewport': fullViewport }]}>
+  <Navigation />
+  <main class:list={[{ 'full-viewport': fullViewport }]}>
+    <slot />
+  </main>
+</body>
+```
+
+### CSS for Full Viewport
+```css
+body.full-viewport {
+  height: 100vh;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+main.full-viewport {
+  padding: 0;
+  max-width: none;
+  overflow: hidden;
+}
+```
+
+### Usage
+```astro
+<BaseLayout fullViewport={true}>
+  <!-- Content that fills remaining viewport -->
+</BaseLayout>
+```
