@@ -1,9 +1,83 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { albums } from '../data/albums.js';
+
 const pageTitle = "Photographs";
+
+// Transform album data for display
+const albumsWithThumbnails = albums.map(album => ({
+  ...album,
+  thumbnail: `https://f004.backblazeb2.com/file/ethan-site-media/images/photographs/${album.slug}/1.jpg`,
+  photoCount: album.photos.length
+}));
 ---
 
 <BaseLayout pageTitle={pageTitle}>
 	<h1>{pageTitle}</h1>
-	<p>Coming soon...</p>
+	<div class="albums-grid">
+		{albumsWithThumbnails.map(album => (
+			<a href={`/mywebsite/photographs/${album.slug}`} class="album-card">
+				<img src={album.thumbnail} alt={`${album.name} thumbnail`} />
+				<div class="album-info">
+					<h3>{album.name}</h3>
+					<p>{album.description}</p>
+					<span class="photo-count">{album.photoCount} photos</span>
+				</div>
+			</a>
+		))}
+	</div>
 </BaseLayout>
+
+<style>
+	.albums-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+		gap: 2rem;
+		margin-top: 2rem;
+	}
+
+	.album-card {
+		text-decoration: none;
+		color: inherit;
+		transition: transform 0.2s;
+	}
+
+	.album-card:hover {
+		transform: translateY(-4px);
+	}
+
+	.album-card img {
+		width: 100%;
+		height: 200px;
+		object-fit: cover;
+		border-radius: 4px;
+	}
+
+	.album-info {
+		margin-top: 1rem;
+	}
+
+	.album-info h3 {
+		margin: 0 0 0.5rem 0;
+		font-size: 1.25rem;
+		color: var(--text-primary);
+	}
+
+	.album-info p {
+		margin: 0 0 0.5rem 0;
+		color: var(--text-secondary);
+		font-size: 0.875rem;
+	}
+
+	.photo-count {
+		font-size: 0.75rem;
+		color: var(--text-secondary);
+	}
+
+	@media (max-width: 768px) {
+		.albums-grid {
+			grid-template-columns: 1fr;
+			gap: 1.5rem;
+		}
+	}
+</style>
