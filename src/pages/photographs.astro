@@ -8,7 +8,7 @@ const pageTitle = "Photographs";
 // Transform album data for display
 const albumsWithThumbnails = albums.map(album => ({
   ...album,
-  thumbnail: `https://f004.backblazeb2.com/file/ethan-site-media/images/photographs/${album.slug}/1.jpg`,
+  thumbnail: `https://f004.backblazeb2.com/file/ethan-site-media/images/photographs/${album.slug}/${album.thumbnailPhoto || 1}.jpg`,
   photoCount: album.photos.length
 }));
 ---
