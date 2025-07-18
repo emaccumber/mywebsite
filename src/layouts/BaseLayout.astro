@@ -4,9 +4,10 @@ import Navigation from '../components/Navigation.astro';
 
 export interface Props {
   pageTitle?: string;
+  fullViewport?: boolean;
 }
 
-const { pageTitle } = Astro.props;
+const { pageTitle, fullViewport = false } = Astro.props;
 const title = pageTitle ? `${pageTitle} - Ethan MacCumber` : 'Ethan MacCumber';
 ---
 
@@ -28,9 +29,9 @@ const title = pageTitle ? `${pageTitle} - Ethan MacCumber` : 'Ethan MacCumber';
       }
     </script>
   </head>
-  <body>
+  <body class:list={[{ 'full-viewport': fullViewport }]}>
     <Navigation />
-    <main>
+    <main class:list={[{ 'full-viewport': fullViewport }]}>
       <slot />
     </main>
   </body>
@@ -58,10 +59,23 @@ const title = pageTitle ? `${pageTitle} - Ethan MacCumber` : 'Ethan MacCumber';
     min-height: 100vh;
   }
 
+  body.full-viewport {
+    height: 100vh;
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: auto 1fr;
+  }
+
   main {
     padding: 1rem 1.5rem;
     max-width: 1200px;
     margin: 0 auto;
+  }
+
+  main.full-viewport {
+    padding: 0;
+    max-width: none;
+    overflow: hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
