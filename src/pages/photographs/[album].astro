@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { Image } from 'astro:assets';
 import { albums } from '../../data/albums.js';
 
 export async function getStaticPaths() {
@@ -17,9 +18,17 @@ export async function getStaticPaths() {
 
 const { albumName, displayName, totalPhotos, photos, albumDescription } = Astro.props;
 const baseUrl = `https://f004.backblazeb2.com/file/ethan-site-media/images/photographs/${albumName}`;
+
+// Preload first few images for better performance
+const preloadImages = [1, 2, 3].map(i => `${baseUrl}/${i}.jpg`);
 ---
 
-<BaseLayout title={`${displayName} - Photographs`} fullViewport={true}>
+<BaseLayout title={`${displayName} - Photographs`}>
+  {/* Preload first few images */}
+  {preloadImages.map(src => (
+    <link rel="preload" as="image" href={src} slot="head" />
+  ))}
+  
   <div class="album-container">
     <div class="photo-viewer">
       <img 
@@ -27,6 +36,8 @@ const baseUrl = `https://f004.backblazeb2.com/file/ethan-site-media/images/photo
         src={`${baseUrl}/1.jpg`}
         alt={`${displayName} - Photo 1`}
         data-current="1"
+        loading="eager"
+        decoding="async"
       />
       <div class="caption" id="photo-caption">{photos[0]?.caption || ''}</div>
     </div>
@@ -148,6 +159,22 @@ const baseUrl = `https://f004.backblazeb2.com/file/ethan-site-media/images/photo
     const nextBtn = document.getElementById('next-btn');
     const caption = document.getElementById('photo-caption');
     let currentIndex = 1;
+    const preloadedImages = new Set();
+
+    // Preload an image
+    function preloadImage(index) {
+      if (index > 0 && index <= totalPhotos && !preloadedImages.has(index)) {
+        const img = new Image();
+        img.src = `${baseUrl}/${index}.jpg`;
+        preloadedImages.add(index);
+      }
+    }
+
+    // Preload adjacent images
+    function preloadAdjacent(index) {
+      preloadImage(index - 1);
+      preloadImage(index + 1);
+    }
 
     function updatePhoto(index) {
       if (index < 1 || index > totalPhotos) return;
@@ -173,6 +200,9 @@ const baseUrl = `https://f004.backblazeb2.com/file/ethan-site-media/images/photo
       } else {
         nextBtn.classList.remove('disabled');
       }
+      
+      // Preload adjacent images
+      preloadAdjacent(index);
     }
 
     function positionCaption() {
@@ -192,6 +222,9 @@ const baseUrl = `https://f004.backblazeb2.com/file/ethan-site-media/images/photo
     if (img.complete) {
       positionCaption();
     }
+    
+    // Preload first few images on load
+    preloadAdjacent(1);
 
     // Button navigation
     prevBtn.addEventListener('click', () => {
@@ -206,15 +239,9 @@ const baseUrl = `https://f004.backblazeb2.com/file/ethan-site-media/images/photo
       }
     });
 
-    // Click on image to advance
-    img.addEventListener('click', (e) => {
-      const rect = img.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const midpoint = rect.width / 2;
-      
-      if (x < midpoint && currentIndex > 1) {
-        updatePhoto(currentIndex - 1);
-      } else if (x >= midpoint && currentIndex < totalPhotos) {
+    // Click on image to advance to next
+    img.addEventListener('click', () => {
+      if (currentIndex < totalPhotos) {
         updatePhoto(currentIndex + 1);
       }
     });

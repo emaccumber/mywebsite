@@ -34,7 +34,14 @@ export default defineConfig({
 })
 ```
 
-Source: Astro Docs - Images
+### Performance Optimizations for Photo Gallery
+- Use `<Image>` component for thumbnails with lazy loading: `loading="lazy"`
+- Set `format="webp"` for automatic format conversion (25-50% smaller files)
+- For dynamic galleries with JavaScript, use regular `<img>` tags with preloading
+- Add `<link rel="preload" as="image">` for first few images
+- Implement JavaScript preloading for adjacent images during navigation
+
+Source: Astro Docs - Images (https://docs.astro.build/en/guides/images/)
 
 ## Astro Components
 
