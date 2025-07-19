@@ -4,12 +4,12 @@ const currentPath = Astro.url.pathname;
 
 <nav>
   <div class="nav-container">
-    <a href="/mywebsite/" class="site-name">Ethan MacCumber</a>
     <button class="hamburger" id="hamburger" aria-label="Menu">
       <span></span>
       <span></span>
       <span></span>
     </button>
+    <a href="/mywebsite/" class="site-name">Ethan MacCumber</a>
     <ul class="nav-links" id="navLinks">
       <li><a href="/mywebsite/photographs" class:list={["nav-link", { active: currentPath === '/mywebsite/photographs/' }]}>photographs</a></li>
       <li><a href="/mywebsite/films" class:list={["nav-link", { active: currentPath === '/mywebsite/films/' }]}>films</a></li>
@@ -35,8 +35,8 @@ const currentPath = Astro.url.pathname;
 
   .nav-container {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 1.5rem;
   }
 
   .site-name {
@@ -61,7 +61,7 @@ const currentPath = Astro.url.pathname;
 
   .nav-links {
     display: flex;
-    gap: 2rem;
+    gap: 1.2rem;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -71,7 +71,7 @@ const currentPath = Astro.url.pathname;
     text-decoration: none;
     color: #666;
     transition: color 0.2s;
-    font-size: 1.2rem;
+    font-size: 1rem;
   }
 
   .nav-link:hover {
@@ -168,6 +168,7 @@ const currentPath = Astro.url.pathname;
 
     .nav-container {
       flex-wrap: wrap;
+      justify-content: flex-start;
     }
 
     .hamburger {
@@ -178,7 +179,7 @@ const currentPath = Astro.url.pathname;
       position: static;
       width: 100%;
       flex-direction: column;
-      align-items: flex-end;
+      align-items: flex-start;
       gap: 0;
       max-height: 0;
       overflow: hidden;
@@ -197,7 +198,7 @@ const currentPath = Astro.url.pathname;
     .nav-links li {
       margin-bottom: 0.5rem;
       width: auto;
-      text-align: right;
+      text-align: left;
     }
 
     .nav-links li:last-child {
