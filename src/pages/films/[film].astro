@@ -41,6 +41,8 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
               data-index={index + 1}
               src={`${baseUrl}/${index + 1}.mp4`}
               muted
+              playsinline
+              disablepictureinpicture
               preload={index === 0 ? 'auto' : 'none'}
             ></video>
           ))}
@@ -168,6 +170,11 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
     margin-left: -0.5rem;
     transition: color 0.2s;
     pointer-events: auto;
+    font-family: 'Inter', sans-serif;
+    font-variant-emoji: text;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
   }
 
   .play-pause-btn:hover {
@@ -355,7 +362,7 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
       window.addEventListener('resize', positionElements);
 
       // Play/Pause functionality
-      playPauseBtn.addEventListener('click', (e) => {
+      function handlePlayPause(e) {
         e.preventDefault();
         e.stopPropagation();
         
@@ -379,25 +386,32 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
             playPauseBtn.textContent = '⏸';
           }).catch(err => console.log('Play failed:', err));
         }
-      });
+      }
+      
+      playPauseBtn.addEventListener('click', handlePlayPause);
+      playPauseBtn.addEventListener('touchend', handlePlayPause);
 
-      // Frame-by-frame scrubbing with mouse (smoothed)
-      let lastScrubTime = 0;
-      videoElements.forEach(video => {
-        video.addEventListener('mousemove', (e) => {
-          if (video.classList.contains('active') && !isPlaying && !video.ended && video.duration > 0) {
-            const now = Date.now();
-            // Throttle to every 50ms for smoother scrubbing
-            if (now - lastScrubTime > 50) {
-              const rect = video.getBoundingClientRect();
-              const x = e.clientX - rect.left;
-              const progress = Math.max(0, Math.min(1, x / rect.width));
-              video.currentTime = video.duration * progress;
-              lastScrubTime = now;
+      // Frame-by-frame scrubbing with mouse (smoothed) - Desktop only
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      
+      if (!isTouchDevice) {
+        let lastScrubTime = 0;
+        videoElements.forEach(video => {
+          video.addEventListener('mousemove', (e) => {
+            if (video.classList.contains('active') && !isPlaying && !video.ended && video.duration > 0) {
+              const now = Date.now();
+              // Throttle to every 50ms for smoother scrubbing
+              if (now - lastScrubTime > 50) {
+                const rect = video.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const progress = Math.max(0, Math.min(1, x / rect.width));
+                video.currentTime = video.duration * progress;
+                lastScrubTime = now;
+              }
             }
-          }
+          });
         });
-      });
+      }
 
       // Video navigation
       prevBtn.addEventListener('click', () => {
