@@ -1,0 +1,444 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { films, getMovingAlbumBaseUrl } from '../../data/films.js';
+
+export async function getStaticPaths() {
+  return films.map(film => ({
+    params: { film: film.slug },
+    props: { film }
+  }));
+}
+
+const { film } = Astro.props;
+const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) : null;
+---
+
+<BaseLayout title={`${film.name} - Films`}>
+  <div class="film-container">
+    {film.type === 'vimeo' ? (
+      <div class="vimeo-wrapper">
+        <div class="video-container">
+          <iframe 
+            src={`https://player.vimeo.com/video/${film.vimeoId}?dnt=1&color=ffffff&title=0&byline=0&portrait=0`}
+            frameborder="0"
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        </div>
+        
+        {film.description && (
+          <div class="film-description">
+            <p>{film.description}</p>
+          </div>
+        )}
+      </div>
+    ) : (
+      <div class="moving-album-container">
+        <div class="video-viewer">
+          {film.videos.map((video, index) => (
+            <video 
+              class={`video-item ${index === 0 ? 'active' : ''}`}
+              data-index={index + 1}
+              src={`${baseUrl}/${index + 1}.mp4`}
+              muted
+              preload={index === 0 ? 'auto' : 'none'}
+            ></video>
+          ))}
+          <div class="caption" id="video-caption">{film.videos[0]?.caption || ''}</div>
+          <div class="play-controls" id="play-controls">
+            <button id="play-pause-btn" class="play-pause-btn" aria-label="Play/Pause">
+              ▶
+            </button>
+          </div>
+        </div>
+
+        <nav class="video-nav">
+          <button id="prev-video-btn" class="nav-btn disabled" aria-label="Previous video">
+            &lt;
+          </button>
+          <button id="next-video-btn" class="nav-btn" aria-label="Next video">
+            &gt;
+          </button>
+        </nav>
+
+        {film.description && (
+          <div class="film-description">
+            <p>{film.description}</p>
+          </div>
+        )}
+      </div>
+    )}
+  </div>
+</BaseLayout>
+
+<style>
+  .film-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+
+  .vimeo-wrapper {
+    width: 100%;
+  }
+
+  /* Responsive video container */
+  .video-container {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+    overflow: hidden;
+    background: #000;
+  }
+
+  .video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .film-description {
+    margin-top: 2rem;
+    max-width: 800px;
+  }
+
+  .film-description p {
+    line-height: 1.6;
+    color: var(--text-primary);
+  }
+
+  /* Moving Album Styles */
+  .moving-album-container {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+  }
+
+  .video-viewer {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  .video-item {
+    max-width: 100%;
+    max-height: 70vh;
+    width: auto;
+    height: auto;
+    cursor: default;
+    user-select: none;
+    display: none;
+  }
+
+  .video-item.active {
+    display: block;
+  }
+
+  .caption {
+    position: absolute;
+    bottom: -1.4rem;
+    right: 0;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    min-height: 1rem;
+  }
+
+  .play-controls {
+    position: absolute;
+    bottom: -2.5rem;
+    left: 0;
+    z-index: 100;
+    pointer-events: auto;
+  }
+
+  .play-pause-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--link-color);
+    cursor: pointer;
+    padding: 0.5rem;
+    margin-left: -0.5rem;
+    transition: color 0.2s;
+    pointer-events: auto;
+  }
+
+  .play-pause-btn:hover {
+    color: var(--link-hover);
+  }
+
+  .video-nav {
+    position: fixed;
+    bottom: 1rem;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 1rem;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* Extend clickable area vertically */
+  .nav-btn::before {
+    content: '';
+    position: fixed;
+    width: 100px;
+    top: 80px; /* Leave space for navigation menu */
+    bottom: 0;
+    cursor: pointer;
+  }
+
+  #prev-video-btn::before {
+    left: 0;
+  }
+
+  #next-video-btn::before {
+    right: 0;
+  }
+
+  .nav-btn {
+    position: relative;
+    background: none;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 2rem;
+    font-weight: 200;
+    color: var(--link-color);
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: color 0.2s;
+    pointer-events: auto;
+  }
+
+  .nav-btn:hover:not(.disabled) {
+    color: var(--link-hover);
+  }
+
+  .nav-btn.disabled {
+    color: var(--text-secondary);
+    cursor: default;
+    opacity: 0.5;
+  }
+
+  .nav-btn.disabled::before {
+    cursor: default;
+  }
+
+  :global([data-theme="dark"]) .nav-btn.disabled {
+    color: #444;
+  }
+
+  @media (max-width: 768px) {
+    .film-container {
+      padding: 1rem;
+    }
+  }
+</style>
+
+{film.type === 'moving-album' && (
+  <script define:vars={{ baseUrl, totalVideos: film.videos.length, videos: film.videos }}>
+    document.addEventListener('DOMContentLoaded', () => {
+      const videoElements = document.querySelectorAll('.video-item');
+      const playPauseBtn = document.getElementById('play-pause-btn');
+      const prevBtn = document.getElementById('prev-video-btn');
+      const nextBtn = document.getElementById('next-video-btn');
+      const caption = document.getElementById('video-caption');
+      let currentIndex = 1;
+      let isPlaying = false;
+      let activeVideo = videoElements[0];
+      let loadedVideos = new Set([1]); // Track which videos are loaded
+
+      function getCurrentVideo() {
+        return document.querySelector('.video-item.active');
+      }
+
+      // Progressive loading function
+      function loadVideo(index) {
+        if (loadedVideos.has(index)) return;
+        
+        const video = videoElements[index - 1];
+        if (video) {
+          video.preload = 'auto';
+          video.load();
+          loadedVideos.add(index);
+        }
+      }
+
+      // Load videos progressively in background
+      function startBackgroundLoading() {
+        // Load next few videos with delay to not block initial playback
+        setTimeout(() => {
+          for (let i = 2; i <= Math.min(totalVideos, 4); i++) {
+            loadVideo(i);
+          }
+        }, 1000);
+        
+        // Load remaining videos after longer delay
+        setTimeout(() => {
+          for (let i = 5; i <= totalVideos; i++) {
+            loadVideo(i);
+          }
+        }, 3000);
+      }
+
+      function updateVideo(index) {
+        if (index < 1 || index > totalVideos) return;
+        
+        // Instant switch - no loading delay
+        videoElements.forEach((vid, i) => {
+          vid.classList.remove('active');
+        });
+        
+        const newVideo = videoElements[index - 1];
+        newVideo.classList.add('active');
+        activeVideo = newVideo;
+        currentIndex = index;
+        
+        // Update caption
+        const videoCaption = videos[index - 1]?.caption || '';
+        caption.textContent = videoCaption;
+        
+        // Update button states
+        if (index === 1) {
+          prevBtn.classList.add('disabled');
+        } else {
+          prevBtn.classList.remove('disabled');
+        }
+        
+        if (index === totalVideos) {
+          nextBtn.classList.add('disabled');
+        } else {
+          nextBtn.classList.remove('disabled');
+        }
+        
+        // Reset play state
+        isPlaying = false;
+        playPauseBtn.textContent = '▶';
+        
+        // Ensure adjacent videos are loaded for smooth navigation
+        loadVideo(index - 1);
+        loadVideo(index + 1);
+        
+        // Position elements for new video
+        positionElements();
+      }
+
+      function positionElements() {
+        const video = getCurrentVideo();
+        if (!video) return;
+        
+        const videoRect = video.getBoundingClientRect();
+        const viewerRect = video.parentElement.getBoundingClientRect();
+        
+        // Position caption to right edge of video
+        const rightOffset = viewerRect.right - videoRect.right;
+        caption.style.right = rightOffset + 'px';
+        
+        // Position play button to left edge of video
+        const leftOffset = videoRect.left - viewerRect.left;
+        const playControls = document.getElementById('play-controls');
+        playControls.style.left = leftOffset + 'px';
+      }
+
+      // Position elements after videos load
+      videoElements.forEach(video => {
+        video.addEventListener('loadedmetadata', positionElements);
+      });
+      window.addEventListener('resize', positionElements);
+
+      // Play/Pause functionality
+      playPauseBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const video = getCurrentVideo();
+        if (!video) return;
+        
+        // Use video.paused instead of our isPlaying variable for Chrome compatibility
+        if (video.ended) {
+          video.currentTime = 0;
+          video.play().then(() => {
+            isPlaying = true;
+            playPauseBtn.textContent = '⏸';
+          }).catch(err => console.log('Play failed:', err));
+        } else if (!video.paused) {
+          video.pause();
+          isPlaying = false;
+          playPauseBtn.textContent = '▶';
+        } else {
+          video.play().then(() => {
+            isPlaying = true;
+            playPauseBtn.textContent = '⏸';
+          }).catch(err => console.log('Play failed:', err));
+        }
+      });
+
+      // Frame-by-frame scrubbing with mouse (smoothed)
+      let lastScrubTime = 0;
+      videoElements.forEach(video => {
+        video.addEventListener('mousemove', (e) => {
+          if (video.classList.contains('active') && !isPlaying && !video.ended && video.duration > 0) {
+            const now = Date.now();
+            // Throttle to every 50ms for smoother scrubbing
+            if (now - lastScrubTime > 50) {
+              const rect = video.getBoundingClientRect();
+              const x = e.clientX - rect.left;
+              const progress = Math.max(0, Math.min(1, x / rect.width));
+              video.currentTime = video.duration * progress;
+              lastScrubTime = now;
+            }
+          }
+        });
+      });
+
+      // Video navigation
+      prevBtn.addEventListener('click', () => {
+        if (currentIndex > 1) {
+          updateVideo(currentIndex - 1);
+        }
+      });
+
+      nextBtn.addEventListener('click', () => {
+        if (currentIndex < totalVideos) {
+          updateVideo(currentIndex + 1);
+        }
+      });
+
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft' && currentIndex > 1) {
+          updateVideo(currentIndex - 1);
+        } else if (e.key === 'ArrowRight' && currentIndex < totalVideos) {
+          updateVideo(currentIndex + 1);
+        } else if (e.key === ' ') {
+          e.preventDefault();
+          playPauseBtn.click();
+        }
+      });
+
+      // Video ended events
+      videoElements.forEach(video => {
+        video.addEventListener('ended', () => {
+          if (video.classList.contains('active')) {
+            isPlaying = false;
+            playPauseBtn.textContent = '▶';
+          }
+        });
+      });
+
+      // Initial setup
+      positionElements();
+      
+      // Start loading other videos in background
+      startBackgroundLoading();
+    });
+  </script>
+)}
