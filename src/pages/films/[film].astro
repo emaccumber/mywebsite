@@ -248,6 +248,11 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
     .film-container {
       padding: 1rem;
     }
+    
+    /* Hide play controls on mobile */
+    .play-controls {
+      display: none;
+    }
   }
 </style>
 
@@ -259,6 +264,7 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
       const prevBtn = document.getElementById('prev-video-btn');
       const nextBtn = document.getElementById('next-video-btn');
       const caption = document.getElementById('video-caption');
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
       let currentIndex = 1;
       let isPlaying = false;
       let activeVideo = videoElements[0];
@@ -303,10 +309,12 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
         // Instant switch - no loading delay
         videoElements.forEach((vid, i) => {
           vid.classList.remove('active');
+          vid.style.display = ''; // Reset any inline styles
         });
         
         const newVideo = videoElements[index - 1];
         newVideo.classList.add('active');
+        newVideo.style.display = ''; // Reset any inline styles
         activeVideo = newVideo;
         currentIndex = index;
         
@@ -329,7 +337,9 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
         
         // Reset play state
         isPlaying = false;
-        playPauseBtn.textContent = '▶';
+        if (playPauseBtn) {
+          playPauseBtn.textContent = '▶';
+        }
         
         // Ensure adjacent videos are loaded for smooth navigation
         loadVideo(index - 1);
@@ -337,6 +347,11 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
         
         // Position elements for new video
         positionElements();
+        
+        // Autoplay on mobile when switching videos
+        if (isTouchDevice) {
+          newVideo.play().catch(err => console.log('Autoplay failed:', err));
+        }
       }
 
       function positionElements() {
@@ -389,12 +404,12 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
         }
       }
       
-      playPauseBtn.addEventListener('click', handlePlayPause);
-      playPauseBtn.addEventListener('touchend', handlePlayPause);
+      if (playPauseBtn) {
+        playPauseBtn.addEventListener('click', handlePlayPause);
+        playPauseBtn.addEventListener('touchend', handlePlayPause);
+      }
 
       // Frame-by-frame scrubbing with mouse (smoothed) - Desktop only
-      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-      
       if (!isTouchDevice) {
         let lastScrubTime = 0;
         videoElements.forEach(video => {
@@ -433,7 +448,7 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
           updateVideo(currentIndex - 1);
         } else if (e.key === 'ArrowRight' && currentIndex < totalVideos) {
           updateVideo(currentIndex + 1);
-        } else if (e.key === ' ') {
+        } else if (e.key === ' ' && playPauseBtn) {
           e.preventDefault();
           playPauseBtn.click();
         }
@@ -451,6 +466,14 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
 
       // Initial setup
       positionElements();
+      
+      // Autoplay first video on mobile
+      if (isTouchDevice && activeVideo) {
+        // Small delay to ensure video is loaded
+        setTimeout(() => {
+          activeVideo.play().catch(err => console.log('Initial autoplay failed:', err));
+        }, 100);
+      }
       
       // Start loading other videos in background
       startBackgroundLoading();
