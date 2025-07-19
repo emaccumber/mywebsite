@@ -82,7 +82,7 @@ const preloadImages = [1, 2, 3].map(i => `${baseUrl}/${i}.jpg`);
     max-height: 70vh;
     width: auto;
     height: auto;
-    cursor: pointer;
+    cursor: default;
     user-select: none;
   }
 
@@ -104,9 +104,11 @@ const preloadImages = [1, 2, 3].map(i => `${baseUrl}/${i}.jpg`);
     justify-content: space-between;
     padding: 0 1rem;
     pointer-events: none;
+    z-index: 10;
   }
 
   .nav-btn {
+    position: relative;
     background: none;
     border: none;
     font-family: 'Inter', sans-serif;
@@ -119,14 +121,36 @@ const preloadImages = [1, 2, 3].map(i => `${baseUrl}/${i}.jpg`);
     pointer-events: auto;
   }
 
+  /* Extend clickable area vertically */
+  .nav-btn::before {
+    content: '';
+    position: fixed;
+    width: 100px;
+    top: 80px; /* Leave space for navigation menu */
+    bottom: 0;
+    cursor: pointer;
+  }
+
+  #prev-btn::before {
+    left: 0;
+  }
+
+  #next-btn::before {
+    right: 0;
+  }
+
   .nav-btn:hover:not(.disabled) {
     color: var(--link-hover);
   }
 
   .nav-btn.disabled {
     color: var(--text-secondary);
-    cursor: not-allowed;
+    cursor: default;
     opacity: 0.5;
+  }
+
+  .nav-btn.disabled::before {
+    cursor: default;
   }
 
   :global([data-theme="dark"]) .nav-btn.disabled {
@@ -239,12 +263,6 @@ const preloadImages = [1, 2, 3].map(i => `${baseUrl}/${i}.jpg`);
       }
     });
 
-    // Click on image to advance to next
-    img.addEventListener('click', () => {
-      if (currentIndex < totalPhotos) {
-        updatePhoto(currentIndex + 1);
-      }
-    });
 
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {
