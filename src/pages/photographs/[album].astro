@@ -90,7 +90,7 @@ const preloadImages = [1, 2, 3].map(i => `${baseUrl}/${i}.jpg`);
     position: absolute;
     bottom: -1.4rem;
     right: 0;
-    font-size: 0.74rem;
+    font-size: var(--font-sm);
     color: var(--text-secondary);
     min-height: 1rem;
   }
@@ -112,7 +112,7 @@ const preloadImages = [1, 2, 3].map(i => `${baseUrl}/${i}.jpg`);
     background: none;
     border: none;
     font-family: 'Inter', sans-serif;
-    font-size: 2rem;
+    font-size: var(--font-2xl);
     font-weight: 200;
     color: var(--link-color);
     cursor: pointer;
@@ -170,7 +170,7 @@ const preloadImages = [1, 2, 3].map(i => `${baseUrl}/${i}.jpg`);
     }
     
     .nav-btn {
-      font-size: 1.5rem;
+      font-size: var(--font-xl);
       padding: 0.25rem;
     }
   }

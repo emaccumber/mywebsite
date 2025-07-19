@@ -40,7 +40,7 @@ const currentPath = Astro.url.pathname;
   }
 
   .site-name {
-    font-size: 1.4rem;
+    font-size: var(--font-xl);
     font-weight: 400;
     text-decoration: none;
     color: #666;
@@ -71,7 +71,7 @@ const currentPath = Astro.url.pathname;
     text-decoration: none;
     color: #666;
     transition: color 0.2s;
-    font-size: 1.1rem;
+    font-size: var(--font-base);
   }
 
   .nav-link:hover {
@@ -207,7 +207,7 @@ const currentPath = Astro.url.pathname;
 
     .nav-link,
     .theme-toggle {
-      font-size: 1rem;
+      font-size: var(--font-base);
       width: auto;
     }
   }

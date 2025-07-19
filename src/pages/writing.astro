@@ -65,7 +65,7 @@ const allTags = [...new Set(posts.flatMap(post => post.tags))].sort();
 		padding: 0.25rem 0.75rem;
 		border-radius: 0.25rem;
 		cursor: pointer;
-		font-size: 0.875rem;
+		font-size: var(--font-sm);
 		color: inherit;
 		transition: all 0.2s;
 	}
@@ -95,7 +95,7 @@ const allTags = [...new Set(posts.flatMap(post => post.tags))].sort();
 	}
 
 	.writing-list {
-		font-size: 1.25rem;
+		font-size: var(--font-base);
 	}
 
 	.post-item {
