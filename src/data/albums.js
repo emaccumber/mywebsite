@@ -89,6 +89,25 @@ export const albums = [
       { caption: 'Chiara\'s Birthday, France, 2024' }
     ]
   },
+    {
+    slug: 'marfa',
+    name: 'Marfa',
+    description: '',
+    thumbnailPhoto: 10,
+    albumDescription: '',
+    photos: [
+      { caption: 'Marfa, 2025' },
+      { caption: 'Marfa, 2025' },
+      { caption: 'Marfa, 2025' },
+      { caption: 'Marfa, 2025' },
+      { caption: 'Marfa, 2025' },
+      { caption: 'Marfa, 2025' },
+      { caption: 'Marfa, 2025' },
+      { caption: 'Marfa, 2025' },
+      { caption: 'Marfa, 2025' },
+      { caption: 'Marfa, 2025' }
+    ]
+  },
   // Add more albums here following the same structure:
   // {
   //   slug: 'album-folder-name',           // Must match Backblaze folder name
