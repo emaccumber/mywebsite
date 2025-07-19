@@ -197,3 +197,42 @@ main.full-viewport {
   <!-- Content that fills remaining viewport -->
 </BaseLayout>
 ```
+
+## Vimeo Embedding Best Practices
+
+### Privacy-First Embedding
+- Use `?dnt=1` parameter to disable tracking
+- Add additional parameters for clean embed:
+  - `&color=ffffff` - Set player controls color
+  - `&title=0` - Hide video title
+  - `&byline=0` - Hide author byline
+  - `&portrait=0` - Hide author portrait
+
+### Responsive Video Container
+```css
+.video-container {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  height: 0;
+  overflow: hidden;
+}
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+```
+
+### Security Attributes
+```html
+<iframe 
+  src="https://player.vimeo.com/video/ID?dnt=1"
+  frameborder="0"
+  allow="autoplay; fullscreen; picture-in-picture"
+  allowfullscreen
+></iframe>
+```
+
+Source: Vimeo Help Center & GDPR Compliance Best Practices
