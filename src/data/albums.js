@@ -3,6 +3,25 @@
 
 export const albums = [
   {
+    slug: 'marfa',
+    name: 'Marfa',
+    description: '',
+    thumbnailPhoto: 10,
+    albumDescription: '',
+    photos: [
+      { caption: 'Marfa, 2025' },
+      { caption: 'Marfa, 2025' },
+      { caption: 'Marfa, 2025' },
+      { caption: 'Marfa, 2025' },
+      { caption: 'Marfa, 2025' },
+      { caption: 'Marfa, 2025' },
+      { caption: 'Marfa, 2025' },
+      { caption: 'Marfa, 2025' },
+      { caption: 'Marfa, 2025' },
+      { caption: 'Border Patrol Blimp, Marfa, 2025' }
+    ]
+  },
+  {
     slug: 'rabat',
     name: 'Rabat',
     description: '',
@@ -87,25 +106,6 @@ export const albums = [
       { caption: 'Chiara\'s Birthday, France, 2024' },
       { caption: 'Chiara\'s Birthday, France, 2024' },
       { caption: 'Chiara\'s Birthday, France, 2024' }
-    ]
-  },
-    {
-    slug: 'marfa',
-    name: 'Marfa',
-    description: '',
-    thumbnailPhoto: 10,
-    albumDescription: '',
-    photos: [
-      { caption: 'Marfa, 2025' },
-      { caption: 'Marfa, 2025' },
-      { caption: 'Marfa, 2025' },
-      { caption: 'Marfa, 2025' },
-      { caption: 'Marfa, 2025' },
-      { caption: 'Marfa, 2025' },
-      { caption: 'Marfa, 2025' },
-      { caption: 'Marfa, 2025' },
-      { caption: 'Marfa, 2025' },
-      { caption: 'Border Patrol Blimp, Marfa, 2025' }
     ]
   },
   // Add more albums here following the same structure:
