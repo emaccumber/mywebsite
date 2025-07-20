@@ -16,7 +16,7 @@ const albumsWithThumbnails = albums.map(album => ({
 <BaseLayout pageTitle={pageTitle}>
 	<div class="albums-grid">
 		{albumsWithThumbnails.map(album => (
-			<a href={`/mywebsite/photographs/${album.slug}`} class="album-card">
+			<a href={`/photographs/${album.slug}`} class="album-card">
 				<Image 
 					src={album.thumbnail} 
 					alt={album.name}

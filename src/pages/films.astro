@@ -14,7 +14,7 @@ const filmsWithThumbnails = films.map(film => ({
 <BaseLayout pageTitle={pageTitle}>
 	<div class="films-grid">
 		{filmsWithThumbnails.map(film => (
-			<a href={`/mywebsite/films/${film.slug}`} class="film-card">
+			<a href={`/films/${film.slug}`} class="film-card">
 				<div class="film-thumbnail-container">
 					<video 
 						class="film-thumbnail"

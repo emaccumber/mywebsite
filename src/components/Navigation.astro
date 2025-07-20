@@ -9,12 +9,12 @@ const currentPath = Astro.url.pathname;
       <span></span>
       <span></span>
     </button>
-    <a href="/mywebsite/" class="site-name">Ethan MacCumber</a>
+    <a href="/" class="site-name">Ethan MacCumber</a>
     <ul class="nav-links" id="navLinks">
-      <li><a href="/mywebsite/photographs" class:list={["nav-link", { active: currentPath === '/mywebsite/photographs/' }]}>photographs</a></li>
-      <li><a href="/mywebsite/films" class:list={["nav-link", { active: currentPath === '/mywebsite/films/' }]}>films</a></li>
-      <li><a href="/mywebsite/writing" class:list={["nav-link", { active: currentPath === '/mywebsite/writing/' }]}>writing</a></li>
-      <li><a href="/mywebsite/information" class:list={["nav-link", { active: currentPath === '/mywebsite/information/' }]}>information</a></li>
+      <li><a href="/photographs" class:list={["nav-link", { active: currentPath === '/photographs/' }]}>photographs</a></li>
+      <li><a href="/films" class:list={["nav-link", { active: currentPath === '/films/' }]}>films</a></li>
+      <li><a href="/writing" class:list={["nav-link", { active: currentPath === '/writing/' }]}>writing</a></li>
+      <li><a href="/information" class:list={["nav-link", { active: currentPath === '/information/' }]}>information</a></li>
       <li><button id="themeToggle" class="theme-toggle nav-link">dark</button></li>
     </ul>
   </div>
