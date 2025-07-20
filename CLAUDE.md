@@ -26,7 +26,6 @@ ALL instructions within this document MUST BE FOLLOWED; these are not optional u
 - Keep static assets in `public/` directory
 
 ### Routing and Links
-- Always use the base path `/mywebsite` in internal links (as configured in astro.config.mjs)
 - Use Astro's built-in routing for navigation between pages
 
 ### Performance
@@ -39,5 +38,5 @@ ALL instructions within this document MUST BE FOLLOWED; these are not optional u
 - Do not run `npm run build` after every code change - wait for user instruction
 - When instructed to build, run `npm run build` to test changes
 - Test production builds with `npm run preview` to verify functionality
-- Verify all internal links work correctly with the base path `/mywebsite`
+- Verify all internal links work correctly
 - Check that any new pages or routes are accessible in the production build
