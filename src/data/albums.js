@@ -48,7 +48,7 @@ export const albums = [
       { caption: 'Camogli, Italy, 2019' },
       { caption: 'Camogli, Italy, 2019' },
       { caption: 'Camogli, Italy, 2019' },
-      { caption: 'Camogli, Italy, 2019' },
+      { caption: 'Daniel and Charlotte and their jellyfish stings, Camogli, Italy, 2019' },
       { caption: 'Camogli, Italy, 2019' },
       { caption: 'Camogli, Italy, 2019' }
     ]
@@ -81,9 +81,9 @@ export const albums = [
     albumDescription: '',
     photos: [
       { caption: 'Halloween, Queens, 2021' },
+      { caption: 'Halloween, Bushwick, 2022' },
       { caption: 'Scotty\'s Birthday, Brooklyn, 2022' },
       { caption: 'Scotty\'s Birthday, Brooklyn, 2022' },
-      { caption: 'Halloween, Brooklyn, 2022' },
       { caption: 'Chiara\'s Birthday, France, 2024' },
       { caption: 'Chiara\'s Birthday, France, 2024' },
       { caption: 'Chiara\'s Birthday, France, 2024' }
@@ -105,7 +105,7 @@ export const albums = [
       { caption: 'Marfa, 2025' },
       { caption: 'Marfa, 2025' },
       { caption: 'Marfa, 2025' },
-      { caption: 'Marfa, 2025' }
+      { caption: 'Border Patrol Blimp, Marfa, 2025' }
     ]
   },
   // Add more albums here following the same structure:

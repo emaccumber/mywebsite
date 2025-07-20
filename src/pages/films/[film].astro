@@ -16,21 +16,23 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
 <BaseLayout title={`${film.name} - Films`}>
   <div class="film-container">
     {film.type === 'vimeo' ? (
-      <div class="vimeo-wrapper">
-        <div class="video-container">
-          <iframe 
-            src={`https://player.vimeo.com/video/${film.vimeoId}?dnt=1&color=ffffff&title=0&byline=0&portrait=0`}
-            frameborder="0"
-            allow="autoplay; fullscreen; picture-in-picture"
-            allowfullscreen
-          ></iframe>
-        </div>
-        
-        {film.description && (
-          <div class="film-description">
-            <p>{film.description}</p>
+      <div class="film-page-wrapper">
+        <div class="vimeo-wrapper">
+          <div class="video-container">
+            <iframe 
+              src={`https://player.vimeo.com/video/${film.vimeoId}?dnt=1&color=ffffff&title=0&byline=0&portrait=0`}
+              frameborder="0"
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowfullscreen
+            ></iframe>
           </div>
-        )}
+          
+          {film.description && (
+            <div class="film-description">
+              <p>{film.description}</p>
+            </div>
+          )}
+        </div>
       </div>
     ) : (
       <div class="moving-album-container">
@@ -80,6 +82,10 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
     padding: 2rem 1rem;
   }
 
+  .film-page-wrapper {
+    margin: 0 -1rem;
+  }
+
   .vimeo-wrapper {
     width: 100%;
   }
@@ -118,7 +124,7 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 2rem 1rem;
+    padding: 2rem 0.25rem;
   }
 
   .video-viewer {
@@ -148,7 +154,7 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
     position: absolute;
     bottom: -1.4rem;
     right: 0;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     color: var(--text-secondary);
     min-height: 1rem;
   }

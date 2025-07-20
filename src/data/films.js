@@ -17,11 +17,17 @@ export const films = [
     name: 'Lakeview / Hyde Park',
     type: 'moving-album',
     videos: [
-      { caption: 'Scene 1' },
-      { caption: 'Scene 2' },
-      { caption: 'Scene 3' }
+      { caption: 'a place to run, washington park' },
+      { caption: 'view from behind my childhood house, lakeview' },
+      { caption: 'where I would eat and study, hyde park' },
+      { caption: 'view of middle school from the park, old town' },
+      { caption: 'pickup basketball games played here, lakeview' },
+      { caption: 'dad and david at home, lakeview' },
+      { caption: 'view of my parents\' room from the hallway, lakeview' },
+      { caption: 'the view outside my college bedroom, hyde park' },
+      { caption: 'abi and mom at home, lakeview' }
     ],
-    description: 'A project shot on 16mm film, presented as individual clips.'
+    description: ''
   },
   // Example Vimeo film - uncomment and modify
   // {
