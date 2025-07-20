@@ -29,43 +29,49 @@ const preloadImages = [1, 2, 3].map(i => `${baseUrl}/${i}.jpg`);
     <link rel="preload" as="image" href={src} slot="head" />
   ))}
   
-  <div class="album-container">
-    <div class="photo-viewer">
-      <img 
-        id="current-photo" 
-        src={`${baseUrl}/1.jpg`}
-        alt={`${displayName} - Photo 1`}
-        data-current="1"
-        loading="eager"
-        decoding="async"
-      />
-      <div class="caption" id="photo-caption">{photos[0]?.caption || ''}</div>
-    </div>
-    
-    <nav class="photo-nav">
-      <button id="prev-btn" class="nav-btn disabled" aria-label="Previous photo">
-        &lt;
-      </button>
-      <button id="next-btn" class="nav-btn" aria-label="Next photo">
-        &gt;
-      </button>
-    </nav>
-
-    {albumDescription && (
-      <div class="album-description">
-        <p>{albumDescription}</p>
+  <div class="album-page-wrapper">
+    <div class="album-container">
+      <div class="photo-viewer">
+        <img 
+          id="current-photo" 
+          src={`${baseUrl}/1.jpg`}
+          alt={`${displayName} - Photo 1`}
+          data-current="1"
+          loading="eager"
+          decoding="async"
+        />
+        <div class="caption" id="photo-caption">{photos[0]?.caption || ''}</div>
       </div>
-    )}
+      
+      <nav class="photo-nav">
+        <button id="prev-btn" class="nav-btn disabled" aria-label="Previous photo">
+          &lt;
+        </button>
+        <button id="next-btn" class="nav-btn" aria-label="Next photo">
+          &gt;
+        </button>
+      </nav>
+
+      {albumDescription && (
+        <div class="album-description">
+          <p>{albumDescription}</p>
+        </div>
+      )}
+    </div>
   </div>
 </BaseLayout>
 
 <style>
+  .album-page-wrapper {
+    margin: 0 -1.5rem;
+  }
+
   .album-container {
     min-height: calc(100vh - 120px);
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 0.75rem 0.25rem;
+    padding: 0.75rem 0.5rem;
   }
 
   .photo-viewer {
@@ -166,8 +172,13 @@ const preloadImages = [1, 2, 3].map(i => `${baseUrl}/${i}.jpg`);
   }
 
   @media (max-width: 768px) {
+    .album-page-wrapper {
+      margin: 0 -1.5rem;
+    }
+
+
     .photo-nav {
-      padding: 0 0.5rem;
+      padding: 0 0.25rem;
     }
     
     .nav-btn {
