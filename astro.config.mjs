@@ -8,4 +8,5 @@ export default defineConfig({
     domains: ['f004.backblazeb2.com'],
   },
   integrations: [mdx()],
+  prefetch: true,
 })

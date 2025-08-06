@@ -16,7 +16,7 @@ const albumsWithThumbnails = albums.map(album => ({
 <BaseLayout pageTitle={pageTitle}>
 	<div class="albums-grid">
 		{albumsWithThumbnails.map(album => (
-			<a href={`/photographs/${album.slug}`} class="album-card">
+			<a href={`/photographs/${album.slug}`} class="album-card" data-astro-prefetch="viewport">
 				<Image 
 					src={album.thumbnail} 
 					alt={album.name}

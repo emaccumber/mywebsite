@@ -11,10 +11,10 @@ const currentPath = Astro.url.pathname;
     </button>
     <a href="/" class="site-name">Ethan MacCumber</a>
     <ul class="nav-links" id="navLinks">
-      <li><a href="/photographs" class:list={["nav-link", { active: currentPath === '/photographs/' }]}>photographs</a></li>
-      <li><a href="/films" class:list={["nav-link", { active: currentPath === '/films/' }]}>films</a></li>
-      <li><a href="/writing" class:list={["nav-link", { active: currentPath === '/writing/' }]}>writing</a></li>
-      <li><a href="/information" class:list={["nav-link", { active: currentPath === '/information/' }]}>information</a></li>
+      <li><a href="/photographs" class:list={["nav-link", { active: currentPath === '/photographs/' }]} data-astro-prefetch="hover">photographs</a></li>
+      <li><a href="/films" class:list={["nav-link", { active: currentPath === '/films/' }]} data-astro-prefetch="hover">films</a></li>
+      <li><a href="/writing" class:list={["nav-link", { active: currentPath === '/writing/' }]} data-astro-prefetch="hover">writing</a></li>
+      <li><a href="/information" class:list={["nav-link", { active: currentPath === '/information/' }]} data-astro-prefetch="hover">information</a></li>
       <li><button id="themeToggle" class="theme-toggle nav-link">dark</button></li>
     </ul>
   </div>
