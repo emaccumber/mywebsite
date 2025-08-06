@@ -236,3 +236,41 @@ main.full-viewport {
 ```
 
 Source: Vimeo Help Center & GDPR Compliance Best Practices
+
+## Astro Prefetch (from https://docs.astro.build/en/guides/prefetch/)
+
+### Overview
+- Prefetch is for **page navigation**, not image preloading
+- Improves page load times by preloading linked pages
+- Opt-in feature enabled in astro.config.mjs
+
+### Configuration
+```js
+// astro.config.mjs
+export default defineConfig({
+  prefetch: true
+});
+```
+
+### Prefetch Strategies
+- `hover` (default): Prefetch when hovering over a link
+- `tap`: Prefetch just before clicking
+- `viewport`: Prefetch when links enter the viewport
+- `load`: Prefetch all links after page load
+
+### Usage
+```html
+<!-- Add to specific links -->
+<a href="/about" data-astro-prefetch="hover">About</a>
+```
+
+### Programmatic Prefetching
+```js
+import { prefetch } from 'astro:prefetch';
+// Prefetch a URL programmatically
+prefetch('/about');
+```
+
+### Note
+- Only works for internal site links
+- Not applicable for image preloading within a page
