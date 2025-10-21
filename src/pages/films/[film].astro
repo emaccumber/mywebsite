@@ -3,13 +3,40 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { films, getMovingAlbumBaseUrl } from '../../data/films.js';
 
 export async function getStaticPaths() {
-  return films.map(film => ({
-    params: { film: film.slug },
-    props: { film }
-  }));
+  const paths = await Promise.all(
+    films.map(async (film) => {
+      let videoWidth = 16;
+      let videoHeight = 9;
+
+      // Fetch dimensions from Vimeo oEmbed API for Vimeo films
+      if (film.type === 'vimeo') {
+        try {
+          const response = await fetch(
+            `https://vimeo.com/api/oembed.json?url=https://vimeo.com/${film.vimeoId}`
+          );
+          if (response.ok) {
+            const data = await response.json();
+            if (data.width && data.height) {
+              videoWidth = data.width;
+              videoHeight = data.height;
+            }
+          }
+        } catch (error) {
+          console.warn(`Failed to fetch dimensions for ${film.slug}, using 16:9 fallback`);
+        }
+      }
+
+      return {
+        params: { film: film.slug },
+        props: { film, videoWidth, videoHeight }
+      };
+    })
+  );
+
+  return paths;
 }
 
-const { film } = Astro.props;
+const { film, videoWidth, videoHeight } = Astro.props;
 const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) : null;
 ---
 
@@ -18,15 +45,15 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
     {film.type === 'vimeo' ? (
       <div class="film-page-wrapper">
         <div class="vimeo-wrapper">
-          <div class="video-container">
-            <iframe 
-              src={`https://player.vimeo.com/video/${film.vimeoId}?dnt=1&color=ffffff&title=0&byline=0&portrait=0`}
-              frameborder="0"
-              allow="autoplay; fullscreen; picture-in-picture"
-              allowfullscreen
-            ></iframe>
-          </div>
-          
+          <iframe
+            class="vimeo-iframe"
+            style={`aspect-ratio: ${videoWidth} / ${videoHeight}`}
+            src={`https://player.vimeo.com/video/${film.vimeoId}?dnt=1&color=ffffff&title=0&byline=0&portrait=0`}
+            frameborder="0"
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+
           {film.description && (
             <div class="film-description">
               <p>{film.description}</p>
@@ -90,21 +117,13 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
     width: 100%;
   }
 
-  /* Responsive video container */
-  .video-container {
-    position: relative;
-    padding-bottom: 56.25%; /* 16:9 aspect ratio */
-    height: 0;
-    overflow: hidden;
-    background: #000;
-  }
-
-  .video-container iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
+  /* Responsive video iframe with dynamic aspect ratio */
+  .vimeo-iframe {
     width: 100%;
-    height: 100%;
+    height: auto;
+    /* aspect-ratio is set inline via videoWidth/videoHeight props for pixel-perfect matching */
+    border: none;
+    display: block;
   }
 
   .film-description {
