@@ -8,7 +8,7 @@ export const films = [
     name: 'Months at Home',
     type: 'vimeo',
     vimeoId: '907969900',  // Sample Vimeo ID for testing
-    description: `Submitted in partial fulfillment of the requirements for my BA in Cinema 
+    description: `Submitted in partial fulfillment of the requirements for my BA in Cinema
     and Media Studies at the University of Chicago. © 2021`,
     year: 2024
   },
@@ -28,6 +28,32 @@ export const films = [
       { caption: 'abi and mom at home, lakeview' }
     ],
     description: ''
+  },
+  {
+    slug: 'to-make-matters-worse',
+    name: 'To Make Matters Worse',
+    type: 'vimeo',
+    vimeoId: '397719584',
+    description: `A comedy centered on an otherwise perfect date that gets derailed by one of the date's friends who impersonates a waiter.
+
+© 2019`,
+    year: 2019
+  },
+  {
+    slug: 'open-circuit-short-circuit',
+    name: 'Open Circuit Short Circuit Test',
+    type: 'vimeo',
+    vimeoId: '911294215',
+    description: `"open circuit and short circuit test 斷路以及短路測試"
+Liang-Jung Chen
+
+An exploration of the tangled digital connections that comprise everyday life. Performed as part of Playing House's inaugural installation series.
+
+"Inspired by the artist's frustration in constantly searching for adapters while traveling in different countries, the live performance is based on an intricately woven structure consisting of cables, LEDs and other electronic components, a literal and metaphorical exploration of a 'circuit' in contemporary lives."
+
+Film by Ethan MacCumber
+September 2023 at Hudson Wilder`,
+    year: 2023
   },
   // Example Vimeo film - uncomment and modify
   // {
