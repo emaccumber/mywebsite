@@ -90,11 +90,6 @@ export function getFilmPoster(slug) {
   return `https://f004.backblazeb2.com/file/ethan-site-media/videos/films/${slug}/poster.png`;
 }
 
-// Helper function to get poster image URL
-export function getFilmPoster(slug) {
-  return `https://f004.backblazeb2.com/file/ethan-site-media/videos/films/${slug}/poster.png`;
-}
-
 // Helper function to get video base URL for moving albums
 export function getMovingAlbumBaseUrl(slug) {
   return `https://f004.backblazeb2.com/file/ethan-site-media/videos/films/${slug}`;

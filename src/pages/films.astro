@@ -30,9 +30,13 @@ const filmsWithThumbnails = await Promise.all(
 		{filmsWithThumbnails.map(film => (
 			<a href={`/films/${film.slug}`} class="film-card">
 				<div class="film-thumbnail-container">
+					<img
+						class="film-thumbnail-image"
+						src={film.poster}
+						alt={film.name}
+					/>
 					<video
-						class="film-thumbnail"
-						src={film.thumbnail}
+						class="film-thumbnail-video"
 						poster={film.poster}
 						muted
 						preload="auto"
@@ -40,6 +44,7 @@ const filmsWithThumbnails = await Promise.all(
 						disablepictureinpicture
 						crossorigin="anonymous"
 						data-film={film.slug}
+						data-video-src={film.thumbnail}
 					></video>
 				</div>
 				<h3 class="film-title">{film.name}</h3>
@@ -70,7 +75,8 @@ const filmsWithThumbnails = await Promise.all(
 		overflow: hidden;
 	}
 
-	.film-thumbnail {
+	.film-thumbnail-image,
+	.film-thumbnail-video {
 		width: 100%;
 		height: 100%;
 		object-fit: contain;
@@ -111,18 +117,27 @@ const filmsWithThumbnails = await Promise.all(
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const videos = document.querySelectorAll('.film-thumbnail');
-
-  // Force videos to start loading
-  videos.forEach(video => {
-    video.load();
-  });
-
-  // Only enable hover video functionality on desktop (non-touch devices)
+  // Detect if device is touch-enabled (mobile)
   const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
+  // Only load and enable videos on desktop
   if (!isTouchDevice) {
+    const videos = document.querySelectorAll('.film-thumbnail-video');
+    const images = document.querySelectorAll('.film-thumbnail-image');
+
+    // Hide static images on desktop, show videos
+    images.forEach(img => {
+      img.style.display = 'none';
+    });
+
+    // Load videos on desktop only
     videos.forEach(video => {
+      const videoSrc = video.dataset.videoSrc;
+      if (videoSrc) {
+        video.src = videoSrc;
+        video.load();
+      }
+
       const filmCard = video.closest('.film-card');
 
       filmCard.addEventListener('mouseenter', () => {
@@ -136,6 +151,12 @@ document.addEventListener('DOMContentLoaded', () => {
           video.pause();
         }
       });
+    });
+  } else {
+    // On mobile, hide videos and keep static images
+    const videos = document.querySelectorAll('.film-thumbnail-video');
+    videos.forEach(video => {
+      video.style.display = 'none';
     });
   }
 });
