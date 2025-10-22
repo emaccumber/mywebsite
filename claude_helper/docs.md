@@ -236,3 +236,52 @@ main.full-viewport {
 ```
 
 Source: Vimeo Help Center & GDPR Compliance Best Practices
+
+## HTML5 Video Poster Images
+
+### Native Poster Attribute
+- Use the native `poster` attribute on `<video>` elements for placeholder images
+- The poster displays automatically while video is downloading/loading
+- Browser handles showing/hiding the poster - no JavaScript or CSS transitions needed
+- Poster automatically disappears when video starts playing or first frame is ready
+
+### Optimizing Posters with Astro's getImage()
+Use `getImage()` to convert remote poster images to WebP at build time:
+
+```astro
+---
+import { getImage } from 'astro:assets';
+
+const posterUrl = 'https://example.com/poster.png';
+const optimizedPoster = await getImage({
+  src: posterUrl,
+  format: 'webp',
+  width: 600,
+  height: 800,
+});
+---
+
+<video
+  src={videoUrl}
+  poster={optimizedPoster.src}
+  preload="metadata"
+  muted
+  playsinline
+></video>
+```
+
+### Key Benefits
+- **Simple**: One attribute, browser handles all complexity
+- **Standard**: HTML5 feature designed for this exact use case
+- **Performant**: Browser optimizes poster display and transition
+- **Build-time optimization**: getImage() converts to WebP during build
+- **No JavaScript required**: No event listeners or transition logic needed
+
+### Best Practices
+- Use `getImage()` with `format: 'webp'` for ~25-50% smaller file sizes
+- Specify width/height to match video dimensions
+- Use `preload="metadata"` to load video metadata without full download
+- Poster image should be first frame of video for seamless appearance
+- Ensure remote image domains are configured in astro.config.mjs
+
+Source: MDN Web Docs - HTML Video Element, Astro Docs - Images

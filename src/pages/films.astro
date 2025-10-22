@@ -1,14 +1,28 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { films, getFilmThumbnail } from '../data/films.js';
+import { getImage } from 'astro:assets';
+import { films, getFilmThumbnail, getFilmPoster } from '../data/films.js';
 
 const pageTitle = "Films";
 
-// Transform film data for display
-const filmsWithThumbnails = films.map(film => ({
-  ...film,
-  thumbnail: getFilmThumbnail(film.slug)
-}));
+// Transform film data for display with optimized posters
+const filmsWithThumbnails = await Promise.all(
+  films.map(async (film) => {
+    const posterUrl = getFilmPoster(film.slug);
+    const optimizedPoster = await getImage({
+      src: posterUrl,
+      format: 'webp',
+      width: 600,
+      height: 800,
+    });
+
+    return {
+      ...film,
+      thumbnail: getFilmThumbnail(film.slug),
+      poster: optimizedPoster.src,
+    };
+  })
+);
 ---
 
 <BaseLayout pageTitle={pageTitle}>
@@ -16,11 +30,12 @@ const filmsWithThumbnails = films.map(film => ({
 		{filmsWithThumbnails.map(film => (
 			<a href={`/films/${film.slug}`} class="film-card">
 				<div class="film-thumbnail-container">
-					<video 
+					<video
 						class="film-thumbnail"
 						src={film.thumbnail}
+						poster={film.poster}
 						muted
-						preload="metadata"
+						preload="auto"
 						playsinline
 						disablepictureinpicture
 						crossorigin="anonymous"
@@ -47,7 +62,6 @@ const filmsWithThumbnails = films.map(film => ({
 		transition: transform 0.2s;
 		display: block;
 	}
-
 
 	.film-thumbnail-container {
 		width: 100%;
@@ -98,64 +112,29 @@ const filmsWithThumbnails = films.map(film => ({
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const videos = document.querySelectorAll('.film-thumbnail');
-  console.log('Found videos:', videos.length);
-  
-  videos.forEach((video, index) => {
-    console.log(`Video ${index + 1} src:`, video.src);
-    
-    // Safari-specific: Force load after a small delay
-    setTimeout(() => {
-      video.load();
-    }, 100);
-    
-    video.addEventListener('loadstart', () => {
-      console.log(`Video ${index + 1} started loading`);
-    });
-    
-    video.addEventListener('loadedmetadata', () => {
-      console.log(`Video ${index + 1} metadata loaded`);
-    });
-    
-    video.addEventListener('error', (e) => {
-      console.error(`Video ${index + 1} error:`, e, video.error);
-    });
+
+  // Force videos to start loading
+  videos.forEach(video => {
+    video.load();
   });
-  
+
   // Only enable hover video functionality on desktop (non-touch devices)
   const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-  console.log('Is touch device:', isTouchDevice);
-  
+
   if (!isTouchDevice) {
     videos.forEach(video => {
       const filmCard = video.closest('.film-card');
-      
+
       filmCard.addEventListener('mouseenter', () => {
-        console.log('Mouse enter, video readyState:', video.readyState, 'ended:', video.ended);
-        // Only play if video hasn't ended
-        if (!video.ended) {
-          if (video.readyState >= 2) { // HAVE_CURRENT_DATA
-            video.play().catch(err => console.log('Video play failed:', err));
-          } else {
-            // Wait for metadata to load, then play
-            video.addEventListener('loadedmetadata', () => {
-              if (!video.ended) {
-                video.play().catch(err => console.log('Video play failed:', err));
-              }
-            }, { once: true });
-          }
+        if (!video.ended && video.readyState >= 2) {
+          video.play().catch(() => {});
         }
       });
-      
+
       filmCard.addEventListener('mouseleave', () => {
         if (!video.ended) {
           video.pause();
         }
-        // Keep video at current frame (don't reset to 0)
-      });
-      
-      // Handle video end - keep at last frame
-      video.addEventListener('ended', () => {
-        // Video will naturally stay at last frame
       });
     });
   }

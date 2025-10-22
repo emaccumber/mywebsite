@@ -82,7 +82,12 @@ September 2023 at Hudson Wilder`,
 
 // Helper function to get thumbnail URL
 export function getFilmThumbnail(slug) {
-  return `https://f004.backblazeb2.com/file/ethan-site-media/videos/films/${slug}/cover.mp4`;
+  return `https://f004.backblazeb2.com/file/ethan-site-media/videos/films/${slug}/cover_optimized.webm`;
+}
+
+// Helper function to get poster image URL
+export function getFilmPoster(slug) {
+  return `https://f004.backblazeb2.com/file/ethan-site-media/videos/films/${slug}/poster.png`;
 }
 
 // Helper function to get video base URL for moving albums
