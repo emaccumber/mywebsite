@@ -8,8 +8,8 @@ export const films = [
     name: 'Months at Home',
     type: 'vimeo',
     vimeoId: '907969900',  // Sample Vimeo ID for testing
-    description: `Submitted in partial fulfillment of the requirements for my BA in Cinema
-    and Media Studies at the University of Chicago. © 2021`,
+    description: `My BA film thesis about my parents, filmed during the pandemic.
+    © 2021`,
     year: 2024
   },
   {
