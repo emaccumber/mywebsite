@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       filmCard.addEventListener('mouseenter', () => {
         if (!video.ended && video.readyState >= 2) {
-          video.play().catch(() => {});
+          video.play().catch(err => console.debug('Video autoplay blocked:', err.message));
         }
       });
 

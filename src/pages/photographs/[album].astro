@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import GalleryNav from '../../components/GalleryNav.astro';
 import { Image } from 'astro:assets';
 import { albums } from '../../data/albums.js';
 
@@ -23,7 +24,7 @@ const baseUrl = `https://f004.backblazeb2.com/file/ethan-site-media/images/photo
 const preloadImages = [1, 2, 3].map(i => `${baseUrl}/${i}.jpg`);
 ---
 
-<BaseLayout title={`${displayName} - Photographs`}>
+<BaseLayout pageTitle={`${displayName} - Photographs`}>
   {/* Preload first few images */}
   {preloadImages.map(src => (
     <link rel="preload" as="image" href={src} slot="head" />
@@ -42,15 +43,8 @@ const preloadImages = [1, 2, 3].map(i => `${baseUrl}/${i}.jpg`);
         />
         <div class="caption" id="photo-caption">{photos[0]?.caption || ''}</div>
       </div>
-      
-      <nav class="photo-nav">
-        <button id="prev-btn" class="nav-btn disabled" aria-label="Previous photo">
-          &lt;
-        </button>
-        <button id="next-btn" class="nav-btn" aria-label="Next photo">
-          &gt;
-        </button>
-      </nav>
+
+      <GalleryNav prevId="prev-btn" nextId="next-btn" prevLabel="Previous photo" nextLabel="Next photo" />
 
       {albumDescription && (
         <div class="album-description">
@@ -101,69 +95,6 @@ const preloadImages = [1, 2, 3].map(i => `${baseUrl}/${i}.jpg`);
     min-height: 1rem;
   }
 
-  .photo-nav {
-    position: fixed;
-    bottom: 1rem;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 1rem;
-    pointer-events: none;
-    z-index: 10;
-  }
-
-  .nav-btn {
-    position: relative;
-    background: none;
-    border: none;
-    font-family: 'Inter', sans-serif;
-    font-size: 2rem;
-    font-weight: 200;
-    color: var(--link-color);
-    cursor: pointer;
-    padding: 1rem;
-    transition: color 0.2s;
-    pointer-events: auto;
-    touch-action: manipulation;
-  }
-
-  /* Extend clickable area vertically */
-  .nav-btn::before {
-    content: '';
-    position: fixed;
-    width: 100px;
-    top: 80px; /* Leave space for navigation menu */
-    bottom: 0;
-    cursor: pointer;
-  }
-
-  #prev-btn::before {
-    left: 0;
-  }
-
-  #next-btn::before {
-    right: 0;
-  }
-
-  .nav-btn:hover:not(.disabled) {
-    color: var(--link-hover);
-  }
-
-  .nav-btn.disabled {
-    color: var(--text-secondary);
-    cursor: default;
-    opacity: 0.5;
-  }
-
-  .nav-btn.disabled::before {
-    cursor: default;
-  }
-
-  :global([data-theme="dark"]) .nav-btn.disabled {
-    color: #444;
-  }
-
   .album-description {
     max-width: 800px;
     margin-top: 3rem;
@@ -179,15 +110,6 @@ const preloadImages = [1, 2, 3].map(i => `${baseUrl}/${i}.jpg`);
 
     #current-photo {
       max-height: 50vh;
-    }
-
-    .photo-nav {
-      padding: 0 0.25rem;
-    }
-    
-    .nav-btn {
-      font-size: 1.8rem;
-      padding: 0.75rem;
     }
   }
 </style>

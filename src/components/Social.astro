@@ -43,20 +43,12 @@ const getUrl = (platform: string, username: string) => {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: #666;
+    color: var(--text-secondary);
     transition: color 0.2s;
     text-decoration: none;
   }
-  
+
   .social-link:hover {
-    color: #000;
-  }
-  
-  html.dark .social-link {
-    color: #ccc;
-  }
-  
-  html.dark .social-link:hover {
-    color: #fff;
+    color: var(--text-primary);
   }
 </style>
