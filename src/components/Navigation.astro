@@ -24,12 +24,8 @@ const currentPath = Astro.url.pathname;
     padding: 1rem 1.5rem;
     position: relative;
     z-index: 100;
-    background: white;
+    background: var(--bg-primary);
     transition: background-color 0.3s ease;
-  }
-
-  html.dark nav {
-    background: #0a0a0a;
   }
 
   .nav-container {
@@ -42,20 +38,12 @@ const currentPath = Astro.url.pathname;
     font-size: 1.2rem;
     font-weight: 400;
     text-decoration: none;
-    color: #666;
+    color: var(--text-secondary);
     transition: color 0.2s;
   }
 
   .site-name:hover {
-    color: #000;
-  }
-
-  html.dark .site-name {
-    color: #ccc;
-  }
-
-  html.dark .site-name:hover {
-    color: #fff;
+    color: var(--text-primary);
   }
 
   .nav-links {
@@ -68,30 +56,18 @@ const currentPath = Astro.url.pathname;
 
   .nav-link {
     text-decoration: none;
-    color: #666;
+    color: var(--text-secondary);
     transition: color 0.2s;
     font-size: 1rem;
   }
 
   .nav-link:hover {
-    color: #000;
+    color: var(--text-primary);
   }
 
   .nav-link.active {
-    color: #000;
+    color: var(--text-primary);
     font-weight: 500;
-  }
-
-  html.dark .nav-link {
-    color: #ccc;
-  }
-
-  html.dark .nav-link:hover {
-    color: #fff;
-  }
-
-  html.dark .nav-link.active {
-    color: #fff;
   }
 
   .theme-toggle {
@@ -123,14 +99,10 @@ const currentPath = Astro.url.pathname;
     display: block;
     width: 24px;
     height: 2px;
-    background: #666;
+    background: var(--text-secondary);
     position: absolute;
     left: 0;
     transition: all 0.3s ease;
-  }
-
-  html.dark .hamburger span {
-    background: #ccc;
   }
 
   .hamburger span:nth-child(1) {

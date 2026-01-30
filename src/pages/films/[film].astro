@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import GalleryNav from '../../components/GalleryNav.astro';
 import { films, getMovingAlbumBaseUrl } from '../../data/films.js';
 
 export async function getStaticPaths() {
@@ -83,14 +84,7 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
           </div>
         </div>
 
-        <nav class="video-nav">
-          <button id="prev-video-btn" class="nav-btn disabled" aria-label="Previous video">
-            &lt;
-          </button>
-          <button id="next-video-btn" class="nav-btn" aria-label="Next video">
-            &gt;
-          </button>
-        </nav>
+        <GalleryNav prevId="prev-video-btn" nextId="next-video-btn" prevLabel="Previous video" nextLabel="Next video" />
 
         {film.description && (
           <div class="film-description">
@@ -209,69 +203,6 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
     color: var(--link-hover);
   }
 
-  .video-nav {
-    position: fixed;
-    bottom: 1rem;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 1rem;
-    pointer-events: none;
-    z-index: 10;
-  }
-
-  /* Extend clickable area vertically */
-  .nav-btn::before {
-    content: '';
-    position: fixed;
-    width: 100px;
-    top: 80px; /* Leave space for navigation menu */
-    bottom: 0;
-    cursor: pointer;
-  }
-
-  #prev-video-btn::before {
-    left: 0;
-  }
-
-  #next-video-btn::before {
-    right: 0;
-  }
-
-  .nav-btn {
-    position: relative;
-    background: none;
-    border: none;
-    font-family: 'Inter', sans-serif;
-    font-size: 2rem;
-    font-weight: 200;
-    color: var(--link-color);
-    cursor: pointer;
-    padding: 1rem;
-    transition: color 0.2s;
-    pointer-events: auto;
-    touch-action: manipulation;
-  }
-
-  .nav-btn:hover:not(.disabled) {
-    color: var(--link-hover);
-  }
-
-  .nav-btn.disabled {
-    color: var(--text-secondary);
-    cursor: default;
-    opacity: 0.5;
-  }
-
-  .nav-btn.disabled::before {
-    cursor: default;
-  }
-
-  :global([data-theme="dark"]) .nav-btn.disabled {
-    color: #444;
-  }
-
   @media (max-width: 768px) {
     .film-container {
       padding: 1rem;
@@ -286,6 +217,12 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
 
 {film.type === 'moving-album' && (
   <script define:vars={{ baseUrl, totalVideos: film.videos.length, videos: film.videos }}>
+    // Timing constants for video loading and interaction
+    const PRELOAD_BATCH_DELAY_MS = 1000;    // Delay before loading videos 2-4
+    const PRELOAD_REMAINING_DELAY_MS = 3000; // Delay before loading videos 5+
+    const MOBILE_AUTOPLAY_DELAY_MS = 100;    // Delay for mobile autoplay init
+    const SCRUB_THROTTLE_MS = 50;            // Mouse scrub update interval
+
     document.addEventListener('DOMContentLoaded', () => {
       const videoElements = document.querySelectorAll('.video-item');
       const playPauseBtn = document.getElementById('play-pause-btn');
@@ -321,14 +258,14 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
           for (let i = 2; i <= Math.min(totalVideos, 4); i++) {
             loadVideo(i);
           }
-        }, 1000);
-        
+        }, PRELOAD_BATCH_DELAY_MS);
+
         // Load remaining videos after longer delay
         setTimeout(() => {
           for (let i = 5; i <= totalVideos; i++) {
             loadVideo(i);
           }
-        }, 3000);
+        }, PRELOAD_REMAINING_DELAY_MS);
       }
 
       function updateVideo(index) {
@@ -444,8 +381,8 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
           video.addEventListener('mousemove', (e) => {
             if (video.classList.contains('active') && !isPlaying && !video.ended && video.duration > 0) {
               const now = Date.now();
-              // Throttle to every 50ms for smoother scrubbing
-              if (now - lastScrubTime > 50) {
+              // Throttle for smoother scrubbing
+              if (now - lastScrubTime > SCRUB_THROTTLE_MS) {
                 const rect = video.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const progress = Math.max(0, Math.min(1, x / rect.width));
@@ -500,7 +437,7 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
         // Small delay to ensure video is loaded
         setTimeout(() => {
           activeVideo.play().catch(err => console.log('Initial autoplay failed:', err));
-        }, 100);
+        }, MOBILE_AUTOPLAY_DELAY_MS);
       }
       
       // Start loading other videos in background

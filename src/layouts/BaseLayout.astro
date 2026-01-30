@@ -1,4 +1,5 @@
 ---
+import '@fontsource/inter/200.css';
 import '@fontsource/inter/400.css';
 import Navigation from '../components/Navigation.astro';
 
@@ -54,6 +55,9 @@ const title = pageTitle ? `${pageTitle} - Ethan MacCumber` : 'Ethan MacCumber';
     --text-secondary: #666666;
     --link-color: #000000;
     --link-hover: #333333;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f0f0f0;
+    --bg-code: #f5f5f5;
   }
 
   html.dark {
@@ -64,6 +68,9 @@ const title = pageTitle ? `${pageTitle} - Ethan MacCumber` : 'Ethan MacCumber';
     --text-secondary: #999999;
     --link-color: #ffffff;
     --link-hover: #cccccc;
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #333333;
+    --bg-code: #333333;
   }
 
   body {
