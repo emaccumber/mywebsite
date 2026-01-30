@@ -40,7 +40,7 @@ const { film, videoWidth, videoHeight } = Astro.props;
 const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) : null;
 ---
 
-<BaseLayout title={`${film.name} - Films`}>
+<BaseLayout pageTitle={`${film.name} - Films`}>
   <div class="film-container">
     {film.type === 'vimeo' ? (
       <div class="film-page-wrapper">

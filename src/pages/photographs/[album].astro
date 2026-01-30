@@ -23,7 +23,7 @@ const baseUrl = `https://f004.backblazeb2.com/file/ethan-site-media/images/photo
 const preloadImages = [1, 2, 3].map(i => `${baseUrl}/${i}.jpg`);
 ---
 
-<BaseLayout title={`${displayName} - Photographs`}>
+<BaseLayout pageTitle={`${displayName} - Photographs`}>
   {/* Preload first few images */}
   {preloadImages.map(src => (
     <link rel="preload" as="image" href={src} slot="head" />

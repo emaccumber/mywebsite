@@ -1,6 +1,4 @@
 ---
-import '@fontsource/inter/100.css';
-import '@fontsource/inter/200.css';
 import '@fontsource/inter/400.css';
 import Navigation from '../components/Navigation.astro';
 
@@ -51,11 +49,21 @@ const title = pageTitle ? `${pageTitle} - Ethan MacCumber` : 'Ethan MacCumber';
     background-color: #ffffff;
     color: #000000;
     transition: background-color 0.3s ease, color 0.3s ease;
+
+    --text-primary: #000000;
+    --text-secondary: #666666;
+    --link-color: #000000;
+    --link-hover: #333333;
   }
 
   html.dark {
     background-color: #0a0a0a;
     color: #ffffff;
+
+    --text-primary: #ffffff;
+    --text-secondary: #999999;
+    --link-color: #ffffff;
+    --link-hover: #cccccc;
   }
 
   body {
