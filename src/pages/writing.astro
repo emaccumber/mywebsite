@@ -5,10 +5,18 @@ const pageTitle = "Writing";
 // Blog posts data
 const posts = [
 	{
+		title: "Private Test Post",
+		date: "2/18/26",
+		url: "/writing/private-test",
+		tags: ["website"],
+		private: true
+	},
+	{
 		title: "Hello",
 		date: "8/5/25",
 		url: "/writing/writing-promise",
-		tags: ["website"]
+		tags: ["website"],
+		private: false
 	}
 ];
 
@@ -27,7 +35,7 @@ const allTags = [...new Set(posts.flatMap(post => post.tags))].sort();
 		<div class="writing-list">
 			{posts.map((post) => (
 				<div class="post-item" data-tags={post.tags.join(',')}>
-					<a href={post.url} class="post-title">{post.title}</a><span class="post-date">, {post.date}</span>
+					<a href={post.url} class:list={["post-title", { "post-private": post.private }]}>{post.title}</a><span class="post-date">, {post.date}</span>
 				</div>
 			))}
 		</div>
@@ -103,6 +111,10 @@ const allTags = [...new Set(posts.flatMap(post => post.tags))].sort();
 
 	.post-title:hover {
 		text-decoration: underline;
+	}
+
+	.post-private {
+		font-style: italic;
 	}
 
 	.post-date {

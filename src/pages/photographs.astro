@@ -88,3 +88,55 @@ const albumsWithThumbnails = albums.map(album => ({
 		}
 	}
 </style>
+
+<script define:vars={{ albums }}>
+document.addEventListener('DOMContentLoaded', () => {
+	const albumCards = document.querySelectorAll('.album-card');
+	const preloadedImages = new Set();
+	
+	// Create observer for viewport detection
+	const observer = new IntersectionObserver((entries) => {
+		entries.forEach(entry => {
+			if (entry.isIntersecting) {
+				const albumCard = entry.target;
+				const href = albumCard.getAttribute('href');
+				const albumSlug = href.split('/').pop();
+				
+				// Preload first image of the album
+				const firstImageUrl = `https://f004.backblazeb2.com/file/ethan-site-media/images/photographs/${albumSlug}/1.jpg`;
+				
+				if (!preloadedImages.has(firstImageUrl)) {
+					preloadedImages.add(firstImageUrl);
+					const img = new Image();
+					img.src = firstImageUrl;
+					console.log('Preloading first image for album:', albumSlug);
+				}
+			}
+		});
+	}, {
+		// Start loading when card is 100px away from viewport
+		rootMargin: '100px'
+	});
+	
+	// Observe all album cards
+	albumCards.forEach(card => {
+		observer.observe(card);
+	});
+	
+	// Also preload on hover for faster response
+	albumCards.forEach(card => {
+		card.addEventListener('mouseenter', () => {
+			const href = card.getAttribute('href');
+			const albumSlug = href.split('/').pop();
+			const firstImageUrl = `https://f004.backblazeb2.com/file/ethan-site-media/images/photographs/${albumSlug}/1.jpg`;
+			
+			if (!preloadedImages.has(firstImageUrl)) {
+				preloadedImages.add(firstImageUrl);
+				const img = new Image();
+				img.src = firstImageUrl;
+				console.log('Preloading first image on hover for album:', albumSlug);
+			}
+		}, { once: true }); // Only trigger once per card
+	});
+});
+</script>

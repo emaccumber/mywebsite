@@ -95,6 +95,56 @@ const filmsWithThumbnails = films.map(film => ({
 	}
 </style>
 
+<script define:vars={{ films }}>
+// Add image prefetching for moving albums
+document.addEventListener('DOMContentLoaded', () => {
+	const filmCards = document.querySelectorAll('.film-card');
+	const preloadedVideos = new Set();
+	
+	// Find moving album films
+	const movingAlbums = films.filter(film => film.type === 'moving-album');
+	
+	// Create observer for viewport detection
+	const observer = new IntersectionObserver((entries) => {
+		entries.forEach(entry => {
+			if (entry.isIntersecting) {
+				const filmCard = entry.target;
+				const href = filmCard.getAttribute('href');
+				const filmSlug = href.split('/').pop();
+				
+				// Check if it's a moving album
+				const film = movingAlbums.find(f => f.slug === filmSlug);
+				if (film) {
+					// Preload first video of the moving album
+					const firstVideoUrl = `https://f004.backblazeb2.com/file/ethan-site-media/videos/films/${filmSlug}/1.mp4`;
+					
+					if (!preloadedVideos.has(firstVideoUrl)) {
+						preloadedVideos.add(firstVideoUrl);
+						// For videos, we'll create a video element with preload metadata
+						const video = document.createElement('video');
+						video.preload = 'metadata';
+						video.src = firstVideoUrl;
+						console.log('Preloading first video metadata for film:', filmSlug);
+					}
+				}
+			}
+		});
+	}, {
+		// Start loading when card is 100px away from viewport
+		rootMargin: '100px'
+	});
+	
+	// Observe film cards for moving albums
+	filmCards.forEach(card => {
+		const href = card.getAttribute('href');
+		const filmSlug = href.split('/').pop();
+		if (movingAlbums.find(f => f.slug === filmSlug)) {
+			observer.observe(card);
+		}
+	});
+});
+</script>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const videos = document.querySelectorAll('.film-thumbnail');

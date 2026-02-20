@@ -274,3 +274,41 @@ prefetch('/about');
 ### Note
 - Only works for internal site links
 - Not applicable for image preloading within a page
+
+## StatiCrypt - Static Site Password Protection
+
+### Overview
+- Encrypts HTML files with AES-256 at build time, replacing them with a password prompt + encrypted blob
+- No backend required — stays fully static (works with GitHub Pages)
+- Password entered once is remembered for 30 days via localStorage
+
+### How It Works in This Project
+- Posts with `private: true` in MDX frontmatter are encrypted after `astro build`
+- `scripts/encrypt-private-posts.mjs` finds private posts, maps them to `dist/writing/<slug>/index.html`, and runs `staticrypt` on each
+- Custom template at `scripts/password-template.html` matches site design (Inter font, dark mode support, same color scheme)
+- Password comes from `STATICRYPT_PASSWORD` env var (GitHub Actions secret in CI)
+
+### CLI Usage
+```bash
+# Encrypt a single file with custom template
+npx staticrypt "dist/writing/my-post/index.html" -p "password" -t "scripts/password-template.html" --remember 30
+
+# Key flags
+# -p <password>       Password for encryption
+# -t <template>       Custom HTML template path
+# --remember <days>   Remember password in localStorage for N days
+# --template-title    Title shown on password page
+# --template-instructions  Instructions text
+# --template-button   Submit button text
+```
+
+### Custom Template Placeholders
+- Template variables use format: `/*[|variable_name|]*/0`
+- Key variables: `js_staticrypt`, `staticrypt_config`, `is_remember_enabled`, `template_title`, `template_instructions`, `template_placeholder`, `template_button`, `template_error`, `template_remember`
+
+### Adding a Private Post
+1. Add `private: true` to the MDX frontmatter
+2. Add the post to `writing.astro` with `private: true` in the posts array
+3. Build with `STATICRYPT_PASSWORD=<pw> npm run build`
+
+Source: StatiCrypt GitHub (https://github.com/robinmoisson/staticrypt)

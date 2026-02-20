@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev --host",
-    "build": "astro build",
+    "build": "astro build && node scripts/encrypt-private-posts.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -12,5 +12,8 @@
     "@astrojs/mdx": "^4.3.0",
     "@fontsource/inter": "^5.2.6",
     "astro": "^5.11.0"
+  },
+  "devDependencies": {
+    "staticrypt": "^3.5.4"
   }
 }
