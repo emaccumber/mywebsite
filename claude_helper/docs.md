@@ -97,6 +97,7 @@ Source: Astro Docs - MDX Integration
 ### Installing Fonts
 - Install font packages via npm: `npm install @fontsource/[font-name]`
 - Import specific weights to optimize loading: `@fontsource/inter/300.css`
+- Import subset-specific CSS to avoid loading unnecessary language scripts: `@fontsource/inter/latin-400.css` (instead of `@fontsource/inter/400.css` which includes cyrillic, greek, vietnamese, etc.)
 - Use in layouts for global application
 
 ### Implementation Pattern
@@ -109,7 +110,7 @@ Source: Astro Docs - MDX Integration
 ```astro
 ---
 // BaseLayout.astro
-import '@fontsource/inter/300.css';
+import '@fontsource/inter/latin-300.css';
 ---
 <style is:global>
   html {

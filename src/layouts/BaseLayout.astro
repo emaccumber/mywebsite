@@ -1,7 +1,7 @@
 ---
-import '@fontsource/inter/100.css';
-import '@fontsource/inter/200.css';
-import '@fontsource/inter/400.css';
+import '@fontsource/inter/latin-100.css';
+import '@fontsource/inter/latin-200.css';
+import '@fontsource/inter/latin-400.css';
 import Navigation from '../components/Navigation.astro';
 
 export interface Props {
@@ -22,6 +22,7 @@ const title = pageTitle ? `${pageTitle} - Ethan MacCumber` : 'Ethan MacCumber';
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
+    <link rel="preconnect" href="https://f004.backblazeb2.com" />
     <title>{title}</title>
     <script is:inline>
       // Prevent dark mode flicker

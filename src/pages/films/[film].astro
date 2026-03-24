@@ -52,6 +52,7 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
             frameborder="0"
             allow="autoplay; fullscreen; picture-in-picture"
             allowfullscreen
+            loading="lazy"
           ></iframe>
 
           {film.description && (

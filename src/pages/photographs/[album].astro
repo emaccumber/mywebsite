@@ -20,7 +20,7 @@ const { albumName, displayName, totalPhotos, photos, albumDescription } = Astro.
 const baseUrl = `https://f004.backblazeb2.com/file/ethan-site-media/images/photographs/${albumName}`;
 
 // Preload first few images for better performance
-const preloadImages = [1, 2, 3].map(i => `${baseUrl}/${i}.jpg`);
+const preloadImages = [1, 2, 3].map(i => `${baseUrl}/${i}.webp`);
 ---
 
 <BaseLayout title={`${displayName} - Photographs`}>
@@ -34,7 +34,7 @@ const preloadImages = [1, 2, 3].map(i => `${baseUrl}/${i}.jpg`);
       <div class="photo-viewer">
         <img 
           id="current-photo" 
-          src={`${baseUrl}/1.jpg`}
+          src={`${baseUrl}/1.webp`}
           alt={`${displayName} - Photo 1`}
           data-current="1"
           loading="eager"
@@ -205,7 +205,7 @@ const preloadImages = [1, 2, 3].map(i => `${baseUrl}/${i}.jpg`);
     function preloadImage(index) {
       if (index > 0 && index <= totalPhotos && !preloadedImages.has(index)) {
         const img = new Image();
-        img.src = `${baseUrl}/${index}.jpg`;
+        img.src = `${baseUrl}/${index}.webp`;
         preloadedImages.add(index);
       }
     }
@@ -220,7 +220,7 @@ const preloadImages = [1, 2, 3].map(i => `${baseUrl}/${i}.jpg`);
       if (index < 1 || index > totalPhotos) return;
       
       currentIndex = index;
-      img.src = `${baseUrl}/${index}.jpg`;
+      img.src = `${baseUrl}/${index}.webp`;
       img.alt = `Photo ${index}`;
       img.dataset.current = index.toString();
       
