@@ -272,6 +272,104 @@ def cmd_optimize_videos(bucket, args):
     print(f"Total saved: {format_size(total_saved)}")
 
 
+def cmd_extract_posters(bucket, args):
+    if not shutil.which("ffmpeg"):
+        print(
+            "Error: ffmpeg is required for poster extraction but was not found.\n"
+            "Install it with: brew install ffmpeg",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    if not shutil.which("cwebp"):
+        print("Error: cwebp not found. Install via: brew install webp", file=sys.stderr)
+        sys.exit(1)
+
+    print(f"\nScanning {VIDEO_PREFIX} ...")
+    all_files = list_b2_files(bucket, VIDEO_PREFIX)
+
+    mp4s = {
+        name: fv
+        for name, fv in all_files.items()
+        if name.lower().endswith(".mp4") and "_optimized" not in name
+    }
+
+    if args.film:
+        film_prefix = f"{VIDEO_PREFIX}{args.film}/"
+        mp4s = {name: fv for name, fv in mp4s.items() if name.startswith(film_prefix)}
+
+    existing_posters = {name for name in all_files if name.endswith("_poster.webp")}
+
+    to_extract = {}
+    for name, fv in mp4s.items():
+        poster_name = name.rsplit(".", 1)[0] + "_poster.webp"
+        if poster_name not in existing_posters:
+            to_extract[name] = fv
+
+    already_done = len(mp4s) - len(to_extract)
+    print(f"Found {len(mp4s)} MP4 files, {already_done} already have posters.")
+    print(f"{len(to_extract)} posters to extract.\n")
+
+    if not to_extract:
+        print("Nothing to do.")
+        return
+
+    if args.dry_run:
+        for name in sorted(to_extract):
+            print(f"  Would extract poster: {name}")
+        return
+
+    failures = []
+
+    for i, (name, fv) in enumerate(sorted(to_extract.items()), 1):
+        poster_name = name.rsplit(".", 1)[0] + "_poster.webp"
+        try:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                input_path = os.path.join(tmpdir, "input.mp4")
+                png_path = os.path.join(tmpdir, "poster.png")
+                poster_path = os.path.join(tmpdir, "poster.webp")
+
+                print(f"[{i}/{len(to_extract)}]  Downloading {name} ({format_size(fv.size)})...")
+                downloaded = bucket.download_file_by_name(name)
+                downloaded.save_to(input_path)
+
+                result = subprocess.run(
+                    ["ffmpeg", "-i", input_path, "-vframes", "1", "-y", png_path],
+                    capture_output=True,
+                    text=True,
+                )
+                if result.returncode != 0:
+                    raise RuntimeError(f"ffmpeg failed: {result.stderr.strip()[-200:]}")
+
+                result = subprocess.run(
+                    ["cwebp", "-q", "80", png_path, "-o", poster_path],
+                    capture_output=True,
+                    text=True,
+                )
+                if result.returncode != 0:
+                    raise RuntimeError(f"cwebp failed: {result.stderr.strip()}")
+
+                poster_size = os.path.getsize(poster_path)
+                bucket.upload_local_file(local_file=poster_path, file_name=poster_name)
+
+                print(
+                    f"[{i}/{len(to_extract)}]  {name} -> {poster_name} ({format_size(poster_size)})"
+                )
+        except KeyboardInterrupt:
+            print("\nInterrupted.")
+            break
+        except Exception as e:
+            failures.append((name, str(e)))
+            print(f"[{i}/{len(to_extract)}]  ERROR: {name} - {e}")
+
+    print(f"\nSummary")
+    print(f"-------")
+    print(f"Extracted: {len(to_extract) - len(failures)}/{len(to_extract)}")
+    if failures:
+        print(f"Failed: {len(failures)}")
+        for name, err in failures:
+            print(f"  - {name}: {err}")
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="B2 Media Optimizer — convert images to WebP and re-encode videos"
@@ -289,6 +387,9 @@ def build_parser() -> argparse.ArgumentParser:
     vid_parser.add_argument("--crf", type=int, default=DEFAULT_CRF, help=f"FFmpeg CRF 0-51 (default: {DEFAULT_CRF})")
     vid_parser.add_argument("--film", type=str, help="Only process a specific film slug")
     vid_parser.add_argument("--replace", action="store_true", help="Replace original files (default: upload as *_optimized.mp4)")
+
+    poster_parser = subparsers.add_parser("extract-posters", help="Extract first frame of MP4s as WebP posters")
+    poster_parser.add_argument("--film", type=str, help="Only process a specific film slug")
 
     return parser
 
@@ -315,6 +416,10 @@ def main():
         if args.film:
             print(f"Film: {args.film}")
         cmd_optimize_videos(bucket, args)
+    elif args.command == "extract-posters":
+        if args.film:
+            print(f"Film: {args.film}")
+        cmd_extract_posters(bucket, args)
 
 
 if __name__ == "__main__":

@@ -95,6 +95,11 @@ export function getMovingAlbumBaseUrl(slug) {
   return `https://f004.backblazeb2.com/file/ethan-site-media/videos/films/${slug}`;
 }
 
+// Helper function to get poster image URL for a specific video in a moving album
+export function getMovingAlbumPoster(slug, index) {
+  return `https://f004.backblazeb2.com/file/ethan-site-media/videos/films/${slug}/${index}_poster.webp`;
+}
+
 // Helper function to get a specific film
 export function getFilm(slug) {
   return films.find(film => film.slug === slug);
