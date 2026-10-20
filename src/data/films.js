@@ -9,8 +9,7 @@ export const films = [
     type: 'vimeo',
     vimeoId: '907969900',  // Sample Vimeo ID for testing
     description: `My BA film thesis about my parents, filmed during the pandemic.
-    © 2021`,
-    year: 2024
+    © 2021`
   },
   {
     slug: '16mm-project',
@@ -36,8 +35,7 @@ export const films = [
     vimeoId: '397719584',
     description: `A comedy centered on an otherwise perfect date that gets derailed by one of the date's friends who impersonates a waiter.
 
-© 2019`,
-    year: 2019
+© 2019`
   },
   {
     slug: 'open-circuit-short-circuit',
@@ -52,8 +50,7 @@ An exploration of the tangled digital connections that comprise everyday life. P
 "Inspired by the artist's frustration in constantly searching for adapters while traveling in different countries, the live performance is based on an intricately woven structure consisting of cables, LEDs and other electronic components, a literal and metaphorical exploration of a 'circuit' in contemporary lives."
 
 Film by Ethan MacCumber
-September 2023 at Hudson Wilder`,
-    year: 2023
+September 2023 at Hudson Wilder`
   },
   // Example Vimeo film - uncomment and modify
   // {
@@ -62,7 +59,6 @@ September 2023 at Hudson Wilder`,
   //   type: 'vimeo',              // Either 'vimeo' or 'moving-album'
   //   vimeoId: '911294215',       // Vimeo video ID
   //   description: 'Extended description about the film...', // Optional, shown below video
-  //   year: 2024,                 // Optional
   //   duration: '12:34'           // Optional
   // },
   
