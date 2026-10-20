@@ -18,17 +18,9 @@ export async function getStaticPaths() {
 
 const { albumName, displayName, totalPhotos, photos, albumDescription } = Astro.props;
 const baseUrl = `https://f004.backblazeb2.com/file/ethan-site-media/images/photographs/${albumName}`;
-
-// Preload first few images for better performance
-const preloadImages = [1, 2, 3].map(i => `${baseUrl}/${i}.webp`);
 ---
 
 <BaseLayout pageTitle={`${displayName} - Photographs`} preconnectMedia>
-  {/* Preload first few images */}
-  {preloadImages.map(src => (
-    <link rel="preload" as="image" href={src} slot="head" />
-  ))}
-  
   <div class="album-page-wrapper">
     <div class="album-container">
       <div class="photo-viewer">
