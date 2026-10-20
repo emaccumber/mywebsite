@@ -5,7 +5,6 @@ export const albums = [
   {
     slug: 'marfa',
     name: 'Marfa',
-    description: '',
     thumbnailPhoto: 10,
     albumDescription: '',
     photos: [
@@ -24,7 +23,6 @@ export const albums = [
   {
     slug: 'rabat',
     name: 'Rabat',
-    description: '',
     thumbnailPhoto: 5, // Specify which photo number to use as thumbnail (default: 1)
     albumDescription: 'These photographs will accompany an upcoming book about the history of women\'s health in Morocco. All were taken at l\'Hôpital de Maternité et Santé Reproductrice les Orangers.',
     photos: [
@@ -44,7 +42,6 @@ export const albums = [
   {
     slug: 'tamarac',
     name: 'Tamarac',
-    description: '',
     thumbnailPhoto: 2,
     albumDescription: '',
     photos: [
@@ -57,7 +54,6 @@ export const albums = [
   {
     slug: 'camogli',
     name: 'Camogli',
-    description: '',
     thumbnailPhoto: 6,
     albumDescription: '',
     photos: [
@@ -75,7 +71,6 @@ export const albums = [
   {
     slug: 'iowa',
     name: 'Iowa',
-    description: '',
     thumbnailPhoto: 1,
     albumDescription: '',
     photos: [
@@ -95,7 +90,6 @@ export const albums = [
   {
     slug: 'party',
     name: 'Party',
-    description: '',
     thumbnailPhoto: 1,
     albumDescription: '',
     photos: [
@@ -112,7 +106,6 @@ export const albums = [
   // {
   //   slug: 'album-folder-name',           // Must match Backblaze folder name
   //   name: 'Display Name',               // Shown on the albums page
-  //   description: 'Short description',   // Shown under album name
   //   thumbnailPhoto: 1,                  // Which photo number to use as thumbnail (default: 1)
   //   albumDescription: 'Longer text about the album project', // Optional, shown below photos
   //   photos: [
