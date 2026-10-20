@@ -1,17 +1,19 @@
 ---
-import { Image } from 'astro:assets';
+import { Picture } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 const mediaUrl = import.meta.env.PUBLIC_MEDIA_URL;
 ---
 
 <BaseLayout fullViewport={true}>
   <div class="hero-container">
-    <Image
+    <Picture
       src={`${mediaUrl}/images/photographs/marfa/7.jpg`}
       alt="Featured image"
-      width={2400}
-      height={1600}
-      format="webp"
+      inferSize
+      formats={['avif', 'webp']}
+      fallbackFormat="webp"
+      widths={[800, 1200, 1600, 2048]}
+      sizes="min(100vw, calc((100vh - 5rem) * 1.25))"
       loading="eager"
       fetchpriority="high"
       class="hero-image"
@@ -27,6 +29,11 @@ const mediaUrl = import.meta.env.PUBLIC_MEDIA_URL;
     display: flex;
     justify-content: center;
     align-items: flex-start;
+  }
+
+  /* Let the <img> inside <picture> stay the flex item so its max-height still resolves */
+  .hero-container picture {
+    display: contents;
   }
 
   .hero-image {

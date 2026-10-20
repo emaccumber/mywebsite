@@ -7,9 +7,11 @@ import Navigation from '../components/Navigation.astro';
 export interface Props {
   pageTitle?: string;
   fullViewport?: boolean;
+  // Preconnect to Backblaze on pages that load media from it at runtime ('anonymous' for CORS requests)
+  preconnectMedia?: boolean | 'anonymous';
 }
 
-const { pageTitle, fullViewport = false } = Astro.props;
+const { pageTitle, fullViewport = false, preconnectMedia = false } = Astro.props;
 const title = pageTitle ? `${pageTitle} - Ethan MacCumber` : 'Ethan MacCumber';
 ---
 
@@ -22,7 +24,13 @@ const title = pageTitle ? `${pageTitle} - Ethan MacCumber` : 'Ethan MacCumber';
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <link rel="preconnect" href="https://f004.backblazeb2.com" />
+    {preconnectMedia && (
+      <link
+        rel="preconnect"
+        href="https://f004.backblazeb2.com"
+        crossorigin={preconnectMedia === 'anonymous' ? 'anonymous' : undefined}
+      />
+    )}
     <title>{title}</title>
     <script is:inline>
       // Prevent dark mode flicker

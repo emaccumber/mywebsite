@@ -1,43 +1,36 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getImage } from 'astro:assets';
+import { Picture } from 'astro:assets';
 import { films, getFilmThumbnail, getFilmPoster } from '../data/films.js';
 
 const pageTitle = "Films";
 
-// Transform film data for display with optimized posters
-const filmsWithThumbnails = await Promise.all(
-  films.map(async (film) => {
-    const posterUrl = getFilmPoster(film.slug);
-    const optimizedPoster = await getImage({
-      src: posterUrl,
-      format: 'webp',
-      width: 600,
-      height: 800,
-    });
-
-    return {
-      ...film,
-      thumbnail: getFilmThumbnail(film.slug),
-      poster: optimizedPoster.src,
-    };
-  })
-);
+// Transform film data for display
+const filmsWithThumbnails = films.map(film => ({
+  ...film,
+  thumbnail: getFilmThumbnail(film.slug),
+  poster: getFilmPoster(film.slug),
+}));
 ---
 
-<BaseLayout pageTitle={pageTitle}>
+<BaseLayout pageTitle={pageTitle} preconnectMedia="anonymous">
 	<div class="films-grid">
-		{filmsWithThumbnails.map(film => (
-			<a href={`/films/${film.slug}`} class="film-card">
+		{filmsWithThumbnails.map((film, index) => (
+			<a href={`/films/${film.slug}/`} class="film-card">
 				<div class="film-thumbnail-container">
-					<img
+					<Picture
 						class="film-thumbnail-image"
 						src={film.poster}
 						alt={film.name}
+						inferSize
+						formats={['avif', 'webp']}
+						fallbackFormat="webp"
+						widths={[400, 600, 800]}
+						sizes="(max-width: 768px) min(calc(100vw - 48px), 444px), (max-width: 1024px) calc((100vw - 80px) / 2), min(calc((100vw - 112px) / 3), 379px)"
+						loading={index < 2 ? 'eager' : 'lazy'}
 					/>
 					<video
 						class="film-thumbnail-video"
-						poster={film.poster}
 						muted
 						preload="none"
 						playsinline
@@ -132,13 +125,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load videos on desktop only
     videos.forEach(video => {
+      const filmCard = video.closest('.film-card');
+
+      // Reuse the poster file the <picture> already chose, so it is only downloaded once
+      const img = filmCard.querySelector('.film-thumbnail-image');
+      if (img.currentSrc) {
+        video.poster = img.currentSrc;
+      } else {
+        img.addEventListener('load', () => { video.poster = img.currentSrc; }, { once: true });
+        img.loading = 'eager';
+      }
+
       const videoSrc = video.dataset.videoSrc;
       if (videoSrc) {
         video.src = videoSrc;
         video.load();
       }
-
-      const filmCard = video.closest('.film-card');
 
       filmCard.addEventListener('mouseenter', () => {
         if (!video.ended && video.readyState >= 2) {
