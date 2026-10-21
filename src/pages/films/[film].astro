@@ -79,11 +79,6 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
             ></video>
           ))}
           <div class="caption" id="video-caption">{film.videos[0]?.caption || ''}</div>
-          <div class="play-controls" id="play-controls">
-            <button id="play-pause-btn" class="play-pause-btn" aria-label="Play/Pause">
-              ▶
-            </button>
-          </div>
         </div>
 
         <GalleryNav prevId="prev-video-btn" nextId="next-video-btn" prevLabel="Previous video" nextLabel="Next video" />
@@ -164,6 +159,9 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
 
   .video-item.active {
     display: block;
+    /* Sit above the nav click areas so scrubbing still works on the video */
+    position: relative;
+    z-index: 11;
   }
 
   .caption {
@@ -175,44 +173,9 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
     min-height: 1rem;
   }
 
-  .play-controls {
-    position: absolute;
-    bottom: -2.5rem;
-    left: 0;
-    z-index: 100;
-    pointer-events: auto;
-  }
-
-  .play-pause-btn {
-    background: none;
-    border: none;
-    font-size: 1.4rem;
-    color: var(--link-color);
-    cursor: pointer;
-    padding: 0.5rem;
-    margin-left: -0.5rem;
-    transition: color 0.2s;
-    pointer-events: auto;
-    font-family: 'Inter', sans-serif;
-    font-variant-emoji: text;
-    -webkit-user-select: none;
-    user-select: none;
-    -webkit-touch-callout: none;
-    touch-action: manipulation;
-  }
-
-  .play-pause-btn:hover {
-    color: var(--link-hover);
-  }
-
   @media (max-width: 768px) {
     .film-container {
       padding: 1rem;
-    }
-    
-    /* Hide play controls on mobile */
-    .play-controls {
-      display: none;
     }
   }
 </style>
@@ -223,13 +186,12 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
 
     document.addEventListener('DOMContentLoaded', () => {
       const videoElements = document.querySelectorAll('.video-item');
-      const playPauseBtn = document.getElementById('play-pause-btn');
       const prevBtn = document.getElementById('prev-video-btn');
       const nextBtn = document.getElementById('next-video-btn');
       const caption = document.getElementById('video-caption');
       const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
       let currentIndex = 1;
-      let isPlaying = false;
+      let isHovering = false;
       let activeVideo = videoElements[0];
       let loadedVideos = new Set(); // Track which videos have full data loaded
 
@@ -256,6 +218,7 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
         // Instant switch - no loading delay
         videoElements.forEach((vid, i) => {
           vid.classList.remove('active');
+          vid.pause();
           vid.style.display = ''; // Reset any inline styles
         });
         
@@ -282,12 +245,6 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
           nextBtn.classList.remove('disabled');
         }
         
-        // Reset play state
-        isPlaying = false;
-        if (playPauseBtn) {
-          playPauseBtn.textContent = '▶';
-        }
-        
         // Ensure adjacent videos are loaded for smooth navigation
         loadVideo(index - 1);
         loadVideo(index + 1);
@@ -295,10 +252,9 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
         // Position elements for new video
         positionElements();
         
-        // Autoplay on mobile when switching videos
-        if (isTouchDevice) {
-          newVideo.play().catch(err => console.log('Autoplay failed:', err));
-        }
+        // Autoplay when switching videos
+        newVideo.currentTime = 0;
+        playVideo(newVideo);
       }
 
       function positionElements() {
@@ -311,11 +267,12 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
         // Position caption to right edge of video
         const rightOffset = viewerRect.right - videoRect.right;
         caption.style.right = rightOffset + 'px';
-        
-        // Position play button to left edge of video
-        const leftOffset = videoRect.left - viewerRect.left;
-        const playControls = document.getElementById('play-controls');
-        playControls.style.left = leftOffset + 'px';
+      }
+
+      // Play unless the pointer is holding the clip or it has reached the end
+      function playVideo(video) {
+        if (isHovering || video.currentTime >= video.duration) return;
+        video.play().catch(err => console.log('Autoplay failed:', err));
       }
 
       // Position elements after videos load
@@ -324,54 +281,33 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
       });
       window.addEventListener('resize', positionElements);
 
-      // Play/Pause functionality
-      function handlePlayPause(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        const video = getCurrentVideo();
-        if (!video) return;
-        
-        // Use video.paused instead of our isPlaying variable for Chrome compatibility
-        if (video.ended) {
-          video.currentTime = 0;
-          video.play().then(() => {
-            isPlaying = true;
-            playPauseBtn.textContent = '⏸';
-          }).catch(err => console.log('Play failed:', err));
-        } else if (!video.paused) {
-          video.pause();
-          isPlaying = false;
-          playPauseBtn.textContent = '▶';
-        } else {
-          video.play().then(() => {
-            isPlaying = true;
-            playPauseBtn.textContent = '⏸';
-          }).catch(err => console.log('Play failed:', err));
-        }
-      }
-      
-      if (playPauseBtn) {
-        playPauseBtn.addEventListener('click', handlePlayPause);
-        playPauseBtn.addEventListener('touchend', handlePlayPause);
-      }
-
-      // Frame-by-frame scrubbing with mouse (smoothed) - Desktop only
+      // Desktop: hovering pauses the clip like a hand on a DJ wheel,
+      // moving left/right scrubs relative to the current frame, leaving resumes
       if (!isTouchDevice) {
+        let lastX = 0;
         let lastScrubTime = 0;
         videoElements.forEach(video => {
+          video.addEventListener('mouseenter', (e) => {
+            isHovering = true;
+            lastX = e.clientX;
+            video.pause();
+          });
+
           video.addEventListener('mousemove', (e) => {
-            if (video.classList.contains('active') && !isPlaying && !video.ended && video.duration > 0) {
-              const now = Date.now();
-              // Throttle for smoother scrubbing
-              if (now - lastScrubTime > SCRUB_THROTTLE_MS) {
-                const rect = video.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const progress = Math.max(0, Math.min(1, x / rect.width));
-                video.currentTime = video.duration * progress;
-                lastScrubTime = now;
-              }
-            }
+            if (!video.classList.contains('active') || !(video.duration > 0)) return;
+            const now = Date.now();
+            // Throttle for smoother scrubbing; lastX only advances when applied
+            if (now - lastScrubTime < SCRUB_THROTTLE_MS) return;
+            const rect = video.getBoundingClientRect();
+            const delta = (e.clientX - lastX) / rect.width * video.duration;
+            video.currentTime = Math.max(0, Math.min(video.duration, video.currentTime + delta));
+            lastX = e.clientX;
+            lastScrubTime = now;
+          });
+
+          video.addEventListener('mouseleave', () => {
+            isHovering = false;
+            if (video.classList.contains('active')) playVideo(video);
           });
         });
       }
@@ -395,20 +331,7 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
           updateVideo(currentIndex - 1);
         } else if (e.key === 'ArrowRight' && currentIndex < totalVideos) {
           updateVideo(currentIndex + 1);
-        } else if (e.key === ' ' && playPauseBtn) {
-          e.preventDefault();
-          playPauseBtn.click();
         }
-      });
-
-      // Video ended events
-      videoElements.forEach(video => {
-        video.addEventListener('ended', () => {
-          if (video.classList.contains('active')) {
-            isPlaying = false;
-            playPauseBtn.textContent = '▶';
-          }
-        });
       });
 
       // Initial setup
@@ -427,12 +350,8 @@ const baseUrl = film.type === 'moving-album' ? getMovingAlbumBaseUrl(film.slug) 
         loadVideo(2);
       }
 
-      // Autoplay first video on mobile
-      if (isTouchDevice && activeVideo) {
-        activeVideo.addEventListener('canplay', () => {
-          activeVideo.play().catch(err => console.log('Initial autoplay failed:', err));
-        }, { once: true });
-      }
+      // Autoplay first video
+      activeVideo.addEventListener('canplay', () => playVideo(activeVideo), { once: true });
     });
   </script>
 )}

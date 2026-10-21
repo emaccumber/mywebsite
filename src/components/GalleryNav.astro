@@ -5,19 +5,17 @@ export interface Props {
   prevLabel?: string;
   nextLabel?: string;
   prevDisabled?: boolean;
-  wideHitArea?: boolean;
 }
 const {
   prevId,
   nextId,
   prevLabel = 'Previous',
   nextLabel = 'Next',
-  prevDisabled = true,
-  wideHitArea = false
+  prevDisabled = true
 } = Astro.props;
 ---
 
-<nav class:list={["gallery-nav", { wide: wideHitArea }]}>
+<nav class="gallery-nav">
   <button id={prevId} class:list={["nav-btn", { disabled: prevDisabled }]} aria-label={prevLabel}>
     &lt;
   </button>
@@ -57,15 +55,11 @@ const {
   .nav-btn::before {
     content: '';
     position: fixed;
-    width: 100px;
+    /* Each side covers a quarter of the page */
+    width: max(100px, 25vw);
     top: 80px;
     bottom: 0;
     cursor: pointer;
-  }
-
-  /* Each side covers half the page */
-  .gallery-nav.wide .nav-btn::before {
-    width: 50vw;
   }
 
   .nav-btn:first-child::before {

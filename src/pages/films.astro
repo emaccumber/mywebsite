@@ -59,6 +59,8 @@ const filmsWithThumbnails = films.map(film => ({
 		color: inherit;
 		transition: transform 0.2s;
 		display: block;
+		/* Only the thumbnail and title are clickable, not the empty space around them */
+		pointer-events: none;
 	}
 
 	.film-thumbnail-container {
@@ -66,15 +68,26 @@ const filmsWithThumbnails = films.map(film => ({
 		height: 300px;
 		position: relative;
 		overflow: hidden;
+		display: flex;
+		align-items: flex-end;
+		justify-content: center;
 	}
 
+	.film-thumbnail-container :global(picture) {
+		display: contents;
+	}
+
+	/* Size to the media's own shape so the click area matches it */
 	.film-thumbnail-image,
 	.film-thumbnail-video {
-		width: 100%;
-		height: 100%;
-		object-fit: contain;
-		object-position: center bottom;
+		max-width: 100%;
+		max-height: 100%;
+		width: auto;
+		height: auto;
+		min-width: 0;
+		min-height: 0;
 		cursor: pointer;
+		pointer-events: auto;
 	}
 
 	.film-title {
@@ -82,6 +95,7 @@ const filmsWithThumbnails = films.map(film => ({
 		font-size: 1rem;
 		color: var(--text-primary);
 		text-align: center;
+		pointer-events: auto;
 	}
 
 	@media (max-width: 768px) {
