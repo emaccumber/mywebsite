@@ -1,0 +1,850 @@
+---
+title: 'Penrose diagrams and what lies past a black hole'
+pubDate: 2026-10-20
+description: 'Following the Schwarzschild solution to its end: white holes, a second universe, and a wormhole that closes too fast to cross.'
+author: 'Ethan MacCumber'
+tags: ["physics", "interactive"]
+layout: '../../layouts/BlogPostLayout.astro'
+---
+import "@marimo-team/mdx-marimo/styles.css";
+import marimoRuntimeUrl from "@marimo-team/mdx-marimo/element/auto?url";
+
+<script type="module" src={marimoRuntimeUrl}></script>
+
+```marimo-config
+dependencies = ["numpy", "matplotlib"]
+```
+
+```python marimo output=false
+import marimo as mo
+import numpy as np
+import matplotlib.pyplot as plt
+
+INK = "#888888"
+ACCENT = "#e4572e"
+LIGHT = "#f2a541"
+PAST = "#4c9be8"
+FAINT = "#88888855"
+
+plt.rcParams.update({
+    "figure.facecolor": "none",
+    "axes.facecolor": "none",
+    "savefig.facecolor": "none",
+    "text.color": INK,
+    "font.size": 10,
+})
+
+
+def blank(ax, lim=2.25):
+    ax.set_aspect("equal")
+    ax.set_xlim(-lim, lim)
+    ax.set_ylim(-lim, lim)
+    ax.axis("off")
+    return ax
+
+
+def label(ax, x, y, text, **kw):
+    kw = {"color": INK, "fontsize": 11, **kw}
+    ax.text(x, y, text, ha="center", va="center", **kw)
+```
+
+The simplest black hole in general relativity is described by the
+Schwarzschild solution: one mass, no spin, no charge, empty space everywhere
+else. If you take that solution literally and follow it everywhere the math
+allows, you get more than a black hole. You get a white hole, a second
+universe, and a wormhole connecting them that closes before anything can get
+through.
+
+None of this is visible in the usual coordinates, because those coordinates
+break down at the event horizon. Seeing it requires a Penrose diagram: a map of
+an entire infinite spacetime drawn on a finite page. This post builds one from
+scratch, then uses it to work through each of those predictions.
+
+Every diagram below is Python (numpy and matplotlib) running in your browser.
+The sliders rerun the code. Each section ends with a short note on how the
+diagram is computed.
+
+## The trick: squash each light ray separately
+
+Start with flat spacetime: one dimension of space `x`, one of time `t`, and
+units where the speed of light is 1. The separation between two nearby events
+is measured by the **line element**:
+
+```markdown marimo
+$$ds^2 = -dt^2 + dx^2$$
+```
+
+Its sign classifies the separation:
+
+- `ds² < 0` (**timelike**): a clock can travel from one event to the other.
+- `ds² > 0` (**spacelike**): no signal can connect them.
+- `ds² = 0` (**null**): only light connects them.
+
+Light rays are the paths with `ds² = 0`, which means `dx/dt = ±1`: lines at
+45°. The rest of this section changes coordinates in steps while making sure
+that `ds² = 0` keeps describing the same paths.
+
+**Step 1: label the light rays.** Define the *null coordinates*
+
+```markdown marimo
+$$u = t - x, \qquad v = t + x$$
+```
+
+Inverting gives `dt = (du + dv)/2` and `dx = (dv − du)/2`. Substitute these
+into the line element:
+
+```markdown marimo
+$$ds^2 = -\tfrac14(du + dv)^2 + \tfrac14(dv - du)^2 = -\,du\,dv$$
+```
+
+Now `ds² = 0` means `du = 0` or `dv = 0`. A right-moving light ray is a line of
+constant `u`, and a left-moving one is a line of constant `v`. Both coordinates
+still run over all real numbers.
+
+**Step 2: squash each coordinate.** Pick an increasing function `f` that maps
+the whole real line onto a finite interval. `arctan` maps it onto
+`(−π/2, π/2)`. Apply it to each coordinate separately:
+
+```markdown marimo
+$$p = f(u), \qquad q = f(v)$$
+```
+
+By the chain rule `dp = f′(u) du` and `dq = f′(v) dv`, so the line element
+becomes
+
+```markdown marimo
+$$ds^2 = -\,\frac{dp\,dq}{f'(u)\,f'(v)}
+\qquad\text{e.g. for } f = \arctan:\quad
+ds^2 = -(1 + u^2)(1 + v^2)\,dp\,dq$$
+```
+
+This is the flat line element `−dp dq` multiplied by a positive function, the
+**conformal factor**. Multiplying by a positive number changes every length but
+never changes the sign of `ds²`. So every separation that was timelike,
+spacelike or null stays that way. Light rays are still `dp = 0` or `dq = 0`,
+still at 45°, and the same pairs of events can signal each other. This is
+called **conformal compactification**: it keeps the causal structure and gives
+up distances.
+
+**Step 3: rotate back.** Step 1 tilted everything by 45°. To make time point up
+again, plot
+
+```markdown marimo
+$$x_{\text{diagram}} = q - p, \qquad y_{\text{diagram}} = q + p$$
+```
+
+**Step 4: find infinity.** Every way of going to infinity is a limit of
+`(u, v)`, and with `arctan` each limit lands on a finite point or edge:
+
+| Going to infinity by... | `u` | `v` | `(p, q)` | In the diagram |
+| --- | --- | --- | --- | --- |
+| waiting forever at fixed `x` | +∞ | +∞ | `(π/2, π/2)` | top corner, `i⁺` |
+| going back in time forever at fixed `x` | −∞ | −∞ | `(−π/2, −π/2)` | bottom corner, `i⁻` |
+| travelling right forever at fixed `t` | −∞ | +∞ | `(−π/2, π/2)` | right corner, `i⁰` |
+| travelling left forever at fixed `t` | +∞ | −∞ | `(π/2, −π/2)` | left corner, `i⁰` |
+| following a right-moving light ray forever | fixed | +∞ | `(p, π/2)` | upper-right edge, `ℐ⁺` |
+| following a left-moving light ray forever | +∞ | fixed | `(π/2, q)` | upper-left edge, `ℐ⁺` |
+
+Reversing time on the last two rows gives the lower edges, `ℐ⁻`.
+
+This is the function that does steps 2 and 3. Every diagram on the page uses
+it:
+
+```python marimo echo=true output=false
+def to_penrose(u, v, f):
+    """Null coordinates (u, v) -> diagram coordinates (x, y)."""
+    edge = f(np.array(1e12))           # value of f "at infinity"
+    p = f(np.asarray(u, float)) / edge  # squash each null coordinate,
+    q = f(np.asarray(v, float)) / edge  # normalised to (-1, 1)
+    return q - p, q + p                 # rotate back 45° so time points up
+
+
+_table = np.sinh(np.linspace(-40, 40, 20001))
+
+def from_penrose(p, f):
+    """Inverse of one squash, by interpolating a lookup table."""
+    edge = f(np.array(1e12))
+    return np.interp(p, f(_table) / edge, _table)
+```
+
+`edge` is `f(∞)`. Dividing by it rescales `p` and `q` to `(−1, 1)`, so any
+squashing function gives a diagram of the same size: the diamond's corners sit
+at `(0, ±2)` and `(±2, 0)`. `from_penrose` undoes the squash numerically, using a lookup table
+instead of an analytic inverse. That way it works for any function you choose
+below, including one with no closed-form inverse.
+
+The squashing function `f` is a choice. The standard one is `arctan`. You can
+change it here (try `np.tanh` or `lambda s: s / (1 + np.abs(s))`, then press
+Ctrl+Enter or ⌘+Enter), and every diagram on the page will redraw with it:
+
+```python marimo editor=true
+compactify = np.arctan
+```
+
+## Flat spacetime becomes a diamond
+
+Below is a grid of constant-`t` and constant-`x` lines. The slider blends
+ordinary coordinates (0) into compactified ones (1).
+
+```python marimo output=false
+morph = mo.ui.slider(0, 1, step=0.02, value=1, label="squash", full_width=True)
+spacing = mo.ui.slider(0.5, 2, step=0.25, value=1, label="grid spacing", full_width=True)
+```
+
+```python marimo
+def _grid(s, step, f):
+    fig, ax = plt.subplots(figsize=(5.5, 5.5))
+    blank(ax)
+    span = np.sinh(np.linspace(-14, 14, 1500))
+    zoom = 4.0
+    for k in np.arange(-12, 12.01, step):
+        for t, x in ((np.full_like(span, k), span), (span, np.full_like(span, k))):
+            px, py = to_penrose(t - x, t + x, f)
+            ax.plot((1 - s) * x / zoom + s * px, (1 - s) * t / zoom + s * py,
+                    color=FAINT, lw=0.8)
+    for sign in (1, -1):
+        px, py = to_penrose(span - sign * span, span + sign * span, f)
+        ax.plot((1 - s) * sign * span / zoom + s * px, (1 - s) * span / zoom + s * py,
+                color=LIGHT, lw=1.6)
+    if s > 0.95:
+        label(ax, 0, 2.12, "$i^+$")
+        label(ax, 0, -2.12, "$i^-$")
+        label(ax, 2.15, 0, "$i^0$")
+        label(ax, -2.15, 0, "$i^0$")
+        label(ax, 1.2, 1.2, r"$\mathscr{I}^+$")
+        label(ax, 1.2, -1.2, r"$\mathscr{I}^-$")
+    return fig
+
+mo.vstack([morph, spacing, _grid(morph.value, spacing.value, compactify)])
+```
+
+The two orange light rays stay at 45° throughout. The rest of the infinite
+plane is compressed into a diamond, and the labels match the table above.
+`ℐ` is pronounced "scri".
+
+The table also predicts where things end up. A particle moving at constant
+speed `|β| < 1` has `x = x₀ + βt`, so `u = (1 − β)t − x₀` and
+`v = (1 + β)t + x₀`. Both go to +∞ as `t → ∞`, so the particle ends at `i⁺`,
+whatever its speed. A light ray (`β = ±1`) keeps one of `u`, `v` fixed, so it
+ends on `ℐ⁺` instead.
+
+```python marimo output=false
+velocity = mo.ui.slider(-0.95, 0.95, step=0.05, value=0.6, label="velocity (fraction of c)", full_width=True)
+start = mo.ui.slider(-3, 3, step=0.5, value=-1, label="starting position", full_width=True)
+```
+
+```python marimo
+def _worldline(v, x0, f):
+    fig, (left, right) = plt.subplots(1, 2, figsize=(9, 4.6))
+    t = np.sinh(np.linspace(-14, 14, 2000))
+    future = t[t >= 0]
+
+    left.set_aspect("equal")
+    left.set_xlim(-6, 6)
+    left.set_ylim(-6, 6)
+    for spine in left.spines.values():
+        spine.set_color(FAINT)
+    left.tick_params(colors=INK)
+    left.set_xlabel("x", color=INK)
+    left.set_ylabel("t", color=INK)
+    left.set_title("ordinary coordinates", color=INK)
+    blank(right)
+    right.set_title("Penrose diagram", color=INK)
+
+    diamond = np.array([[0, -2], [2, 0], [0, 2], [-2, 0], [0, -2]])
+    right.plot(*diamond.T, color=INK, lw=1)
+    label(right, 0, 2.15, "$i^+$")
+    label(right, 0, -2.15, "$i^-$")
+    label(right, 2.15, 0, "$i^0$")
+    label(right, 1.2, 1.2, r"$\mathscr{I}^+$")
+
+    x = x0 + v * t
+    left.plot(x, t, color=ACCENT, lw=2)
+    right.plot(*to_penrose(t - x, t + x, f), color=ACCENT, lw=2)
+    for sign in (1, -1):
+        xr = x0 + sign * future
+        left.plot(xr, future, color=LIGHT, lw=1.4, ls="--")
+        right.plot(*to_penrose(future - xr, future + xr, f), color=LIGHT, lw=1.4, ls="--")
+    left.plot([x0], [0], "o", color=ACCENT)
+    right.plot(*to_penrose(-x0, x0, f), "o", color=ACCENT)
+    fig.tight_layout()
+    return fig
+
+mo.vstack([velocity, start, _worldline(velocity.value, start.value, compactify)])
+```
+
+**How it's drawn.** Each grid line is sampled at points spaced like
+`np.sinh(np.linspace(-14, 14, n))`. That puts most points near the origin but
+still reaches about 10⁶, so the curves get close enough to infinity to touch
+the edges of the diamond. Evenly spaced points would either stop short of the
+edge or waste most of the samples far away, where everything is squeezed into
+a single pixel. The morph is a linear blend between two positions for the same
+sample point, the original `(x, t)` and its `to_penrose` image. That works
+because every curve is just an array of points.
+
+## The black hole we expect
+
+The Schwarzschild line element for a mass `M`, in units where `G = c = 1`, is
+
+```markdown marimo
+$$ds^2 = -\left(1 - \frac{2M}{r}\right)dt^2 + \frac{dr^2}{1 - 2M/r} + r^2\,d\Omega^2$$
+```
+
+The coordinates mean:
+
+- `r` is defined so that the sphere at `r` has area `4πr²`. It is not the
+  distance to the centre.
+- `t` is time measured by a clock at rest very far away.
+- `dΩ²` covers the two angles.
+
+Every diagram here shows only radial motion, so drop `dΩ²`. Each point in the
+diagram stands for a whole sphere.
+
+At `r = 2M` the `dt²` coefficient goes to zero and the `dr²` coefficient goes
+to infinity. To tell whether that is real, compute something that doesn't
+depend on coordinates. The Kretschmann scalar is built from the full curvature
+tensor and has the same value in every coordinate system:
+
+```markdown marimo
+$$K = R_{abcd}R^{abcd} = \frac{48M^2}{r^6}$$
+```
+
+At `r = 2M` it equals `3/(4M⁴)`, which is finite. It only diverges at `r = 0`.
+So `r = 2M` is a failure of the coordinates, and `r = 0` is a real
+singularity.
+
+The plan is the same as for flat spacetime: find null coordinates, then fix
+them up until nothing goes wrong at `r = 2M`.
+
+**Step 1: the tortoise coordinate.** For radial light, `ds² = 0` gives
+`dt = ±dr / (1 − 2M/r)`. Define `r*` so that this becomes `dt = ±dr*`:
+
+```markdown marimo
+$$r_* = r + 2M\ln\left|\frac{r}{2M} - 1\right|,
+\qquad \frac{dr_*}{dr} = \frac{1}{1 - 2M/r}$$
+```
+
+The radial line element becomes `(1 − 2M/r)(−dt² + dr*²)`. That's the flat
+form multiplied by a factor. As `r → 2M`, `r* → −∞`. Measured in `r*`, the
+horizon is infinitely far away. This is where "it takes forever to reach the
+horizon" comes from.
+
+**Step 2: null coordinates.** Exactly as in flat space, set `u = t − r*` and
+`v = t + r*`:
+
+```markdown marimo
+$$ds^2 = -\left(1 - \frac{2M}{r}\right)du\,dv$$
+```
+
+Outgoing light has constant `u` and ingoing light has constant `v`. This is
+still broken at the horizon. The factor in front goes to zero there, and an
+object falling in only reaches `r = 2M` in the limit `u → +∞`.
+
+**Step 3: exponentiate.** Define
+
+```markdown marimo
+$$U = -e^{-u/4M}, \qquad V = e^{v/4M}$$
+```
+
+The troublesome limit `u → +∞` is now `U → 0`, an ordinary finite value. Two
+results follow.
+
+First, the product `UV` depends only on `r`. Use `v − u = 2r*` and then
+`e^(r*/2M) = (r/2M − 1) e^(r/2M)`:
+
+```markdown marimo
+$$UV = -e^{(v-u)/4M} = -e^{r_*/2M} = \left(1 - \frac{r}{2M}\right)e^{r/2M}$$
+```
+
+Second, the line element. From `du = −4M dU/U` and `dv = 4M dV/V`:
+
+```markdown marimo
+$$ds^2 = -\left(1 - \frac{2M}{r}\right)\frac{-16M^2}{UV}\,dU\,dV
+= -\frac{32M^3}{r}\,e^{-r/2M}\,dU\,dV$$
+```
+
+The factor in front of `dU dV` is finite and positive at `r = 2M`. Nothing
+goes wrong at the horizon now. The only remaining problem is `r = 0`, which is
+the true singularity.
+
+**Step 4: extend.** By construction `U < 0` and `V > 0`, which covers only the
+outside of the black hole. But the final line element makes sense for any `U`
+and `V` at which `r` is positive. The right-hand side of the `UV` equation
+decreases steadily as `r` increases (its derivative is
+`−(r/4M²) e^(r/2M) < 0`), so each value of `UV` gives exactly one `r`.
+Reading off:
+
+- the horizon `r = 2M` is `UV = 0`, the two lines `U = 0` and `V = 0`;
+- the singularity `r = 0` is `UV = 1`;
+- spacetime is every point with `UV < 1`.
+
+**Step 5: time and space axes.** Setting `U = T − X` and `V = T + X` gives the
+Kruskal–Szekeres coordinates. Outside the horizon:
+
+```markdown marimo
+$$T = \sqrt{\frac{r}{2M} - 1}\; e^{r/4M} \sinh\frac{t}{4M}, \qquad
+X = \sqrt{\frac{r}{2M} - 1}\; e^{r/4M} \cosh\frac{t}{4M}$$
+```
+
+Inside the horizon (`r < 2M`), `r/2M − 1` is negative. Running the same steps
+with `1 − r/2M` swaps `sinh` and `cosh`.
+
+**Step 6: squash.** The line element is a positive factor times `−dU dV`,
+which is exactly the form flat spacetime had after step 1. Light moves at 45°
+in `(U, V)` everywhere, so the flat-space compactification applies unchanged:
+`p = f(U)`, `q = f(V)`.
+
+In code:
+
+```python marimo echo=true output=false
+M = 1.0
+
+def kruskal(r, t):
+    """Schwarzschild (r, t) -> Kruskal (T, X), inside and outside the horizon."""
+    outside = r > 2 * M
+    a = np.sqrt(np.abs(r / (2 * M) - 1)) * np.exp(r / (4 * M))
+    T = np.where(outside, a * np.sinh(t / (4 * M)), a * np.cosh(t / (4 * M)))
+    X = np.where(outside, a * np.cosh(t / (4 * M)), a * np.sinh(t / (4 * M)))
+    return T, X
+
+def infall(r0, n=6000):
+    """Radial free fall from rest at r0, parametrised by the cycloid angle eta."""
+    eta = np.linspace(0, np.pi, n)
+    r = r0 / 2 * (1 + np.cos(eta))
+    tau = r0 / 2 * np.sqrt(r0 / (2 * M)) * (eta + np.sin(eta))  # proper time
+    k = np.sqrt(r0 / (2 * M) - 1)
+    with np.errstate(all="ignore"):
+        t = (2 * M * np.log(np.abs((k + np.tan(eta / 2)) / (k - np.tan(eta / 2))))
+             + 2 * M * k * (eta + r0 / (4 * M) * (eta + np.sin(eta))))
+        T, X = kruskal(r, t)
+    ok = np.isfinite(T) & np.isfinite(X)
+    return r[ok], tau[ok], T[ok] - X[ok], T[ok] + X[ok]
+
+def radius(uv, iters=80):
+    """Invert UV = (1 - r/2M) e^(r/2M) for r, by vectorised bisection."""
+    lo, hi = np.zeros_like(uv), np.full_like(uv, 60.0)
+    for _ in range(iters):
+        mid = (lo + hi) / 2
+        go_up = (1 - mid) * np.exp(mid) > uv  # left side decreases with r
+        lo, hi = np.where(go_up, mid, lo), np.where(go_up, hi, mid)
+    return 2 * M * (lo + hi) / 2
+```
+
+```python marimo output=false
+def schwarzschild_frame(ax, f, labels=True):
+    """Boundary, horizons and singularities of the extended Schwarzschild diagram."""
+    blank(ax, 2.3)
+    ax.set_ylim(-1.15, 1.15)
+    big = np.logspace(-6, 12, 800)
+    for su, sv in ((-1, 1), (1, -1)):
+        ax.plot(*to_penrose(su * big, np.full_like(big, sv * 1e12), f), color=INK, lw=1)
+        ax.plot(*to_penrose(np.full_like(big, su * 1e12), sv * big, f), color=INK, lw=1)
+    line = np.concatenate([-big[::-1], big])
+    ax.plot(*to_penrose(np.zeros_like(line), line, f), color=INK, lw=1, ls="--")
+    ax.plot(*to_penrose(line, np.zeros_like(line), f), color=INK, lw=1, ls="--")
+    for s in (1, -1):
+        ax.plot(*to_penrose(s * big, s / big, f), color=ACCENT, lw=3)
+    if labels:
+        label(ax, 0, 1.08, "singularity", fontsize=9, color=ACCENT)
+        label(ax, 0, -1.08, "singularity", fontsize=9, color=ACCENT)
+        label(ax, 0.75, -0.3, "our\nuniverse", fontsize=9)
+        label(ax, 0, 0.55, "black\nhole", fontsize=9)
+        label(ax, -0.75, -0.3, "other\nuniverse", fontsize=9)
+        label(ax, 0, -0.55, "white\nhole", fontsize=9)
+```
+
+### A falling observer
+
+An observer falls in from rest at radius `r₀`. With no forces acting, they
+follow a **geodesic**. For radial geodesics, `t` doesn't appear in the line
+element, which gives a conserved energy per unit mass, `E`. Then use `τ` (the
+observer's own clock) as the parameter, which means `ds² = −dτ²` along the
+path. Together:
+
+```markdown marimo
+$$E = \left(1 - \frac{2M}{r}\right)\frac{dt}{d\tau},
+\qquad
+\left(\frac{dr}{d\tau}\right)^2 = E^2 - 1 + \frac{2M}{r}$$
+```
+
+Starting at rest means `dr/dτ = 0` at `r₀`, so `E² = 1 − 2M/r₀` and
+
+```markdown marimo
+$$\left(\frac{dr}{d\tau}\right)^2 = \frac{2M}{r} - \frac{2M}{r_0}$$
+```
+
+This is the same equation as Newtonian free fall. The substitution
+`r = (r₀/2)(1 + cos η)` solves it, with `η` running from 0 (start) to `π`
+(`r = 0`):
+
+```markdown marimo
+$$r = \frac{r_0}{2}(1 + \cos\eta), \qquad
+\tau = \frac{r_0}{2}\sqrt{\frac{r_0}{2M}}\,(\eta + \sin\eta)$$
+```
+
+At `η = π`, the observer reaches the singularity after a finite proper time,
+`τ = (π/2) r₀ √(r₀/2M)`. Integrating `dt/dτ = E / (1 − 2M/r)` gives the far-away
+clock's reading, with `k = √(r₀/2M − 1)`:
+
+```markdown marimo
+$$t = 2M \ln\left|\frac{k + \tan(\eta/2)}{k - \tan(\eta/2)}\right|
++ 2Mk\left[\eta + \frac{r_0}{4M}(\eta + \sin\eta)\right]$$
+```
+
+The logarithm diverges when `tan(η/2) = k`. Substituting into the formula for
+`r` shows that this is exactly `r = 2M`. So `t` goes to infinity at the
+horizon while `τ` stays finite: the observer's own clock reads a finite time
+at the crossing, but the far-away clock never gets there. Passing `(r, t)`
+through step 5 gives `(T, X)` at every point along the fall.
+
+**Light pulses.** The observer sends a light pulse outward at regular
+intervals of `τ`. An outgoing pulse has constant `u`, so constant `U`. That
+one number decides its fate:
+
+- `U < 0` (sent from outside): the pulse runs to `V → ∞`, which is `ℐ⁺`, and a
+  distant observer receives it.
+- `U > 0` (sent from inside): `V` can only grow until `UV = 1`, so the pulse
+  hits the singularity at `V = 1/U`.
+
+```python marimo output=false
+drop = mo.ui.slider(2.5, 6, step=0.25, value=4, label="drop radius r₀ (units of M)", full_width=True)
+pings = mo.ui.slider(4, 40, step=1, value=16, label="number of pings", full_width=True)
+```
+
+```python marimo
+def _black_hole(r0, n_pings, f):
+    fig, ax = plt.subplots(figsize=(8, 4.4))
+    schwarzschild_frame(ax, f, labels=False)
+    for rc in (2.25, 2.75, 3.5, 5):
+        c = np.sqrt((rc / (2 * M) - 1) * np.exp(rc / (2 * M)))
+        e = np.exp(np.linspace(-15, 15, 600))
+        ax.plot(*to_penrose(-c / e, c * e, f), color=FAINT, lw=0.8)
+
+    r, tau, U, V = infall(r0)
+    b = np.sqrt(V[np.argmax(U >= 0)])  # time shift = boost; see note below
+    U, V = U * b, V / b
+    ax.plot(*to_penrose(U, V, f), color=INK, lw=2.2)
+
+    reached = 0
+    for tp in np.linspace(0, tau[-1], n_pings, endpoint=False):
+        i = np.searchsorted(tau, tp)
+        u0, v0 = U[i], V[i]
+        escapes = u0 < 0
+        if escapes:
+            vs = v0 + np.concatenate([[0], np.geomspace(1e-4, 1e12, 400)])
+        else:
+            vs = np.linspace(v0, 1 / u0, 300)
+        reached += escapes
+        ax.plot(*to_penrose(np.full_like(vs, u0), vs, f), color=LIGHT if escapes else FAINT, lw=1)
+
+    label(ax, 0, 1.08, "singularity", fontsize=9, color=ACCENT)
+    label(ax, 1.45, 0.8, r"$\mathscr{I}^+$")
+    fig.tight_layout()
+
+    t_horizon = tau[np.argmax(r <= 2 * M)]
+    stats = mo.md(
+        f"Falling from **r₀ = {r0:g}M**, the observer crosses the horizon after "
+        f"**{t_horizon:.1f}M** of their own time and reaches the singularity at "
+        f"**{tau[-1]:.1f}M**. Of {n_pings} pings, **{reached}** reach distant "
+        f"observers. The other {n_pings - reached} don't."
+    )
+    return mo.vstack([fig, stats])
+
+mo.vstack([drop, pings, _black_hole(drop.value, pings.value, compactify)])
+```
+
+What the diagram shows:
+
+- **Nothing happens at the horizon.** It's a 45° line. The falling observer
+  crosses it in finite time by their own clock.
+- **Distant observers never see the crossing.** Pings sent before it reach
+  `ℐ⁺`, but each one arrives later than the last, and the ping sent exactly at
+  the horizon never arrives at all. That's why the object appears to freeze at
+  the horizon from far away.
+- **Inside, the singularity is in the future, not at a location.** It's a
+  horizontal line. Every path inside the horizon ends on it, including outgoing
+  light. Avoiding it would be like avoiding next Tuesday.
+
+**How it's drawn.** The free-fall path uses the textbook closed form: `r` and
+proper time `τ` are both simple functions of a cycloid angle `η`, so there's no
+differential equation to integrate. The Schwarzschild time `t` has a log term
+that goes to infinity at the horizon. The code computes it anyway, gets
+`inf × 0 = NaN` at that one point, and drops it with `np.isfinite`. You can see
+the coordinate singularity in the code: one bad sample, while `T` and `X` on
+either side of it are finite and smooth.
+
+Inside the horizon, `kruskal` swaps `sinh` and `cosh`. That's because `r` and
+`t` swap roles inside: `r` becomes the time coordinate, which is why it can
+only decrease.
+
+The pulse test in the code is literally `escapes = u0 < 0`, and pulses that
+don't escape are drawn from `V₀` to `1/U₀`.
+
+The line `b = np.sqrt(...)` shifts the moment of the drop. Shifting `t` by a
+constant `c` shifts `u` and `v` both by `c`, so `U → e^(−c/4M) U` and
+`V → e^(c/4M) V`. The product `UV`, and therefore `r` and the whole geometry,
+is unchanged. It's an exact symmetry, so the code uses it to move the plunge to
+the middle of the diagram. With `arctan`, an unshifted drop from `r₀ = 4M`
+starts at `V ≈ 2.7` and hits the horizon where `arctan V` is already close to
+`π/2`, squeezing the whole fall into a corner.
+
+## Extending the solution
+
+The diagram above has three more regions that the falling observer never
+enters. They come from step 4. The line element is valid at every point with
+`UV < 1`, not just the quadrant `U < 0 < V` we started from. Stopping at
+`U = 0` or `V = 0` would leave free-fall paths that end partway along for no
+physical reason. The curvature is finite there, so nothing stops them. The
+standard requirement is that a geodesic may end only at a genuine singularity.
+Extending the solution until that holds is called the **maximal extension**,
+and it fills all four quadrants of the `(U, V)` plane:
+
+- **Our universe** (`U < 0 < V`): the outside of the black hole.
+- **The black hole** (`U, V > 0`): everything in it ends at the future singularity.
+- **The other universe** (`U > 0 > V`): a second complete exterior, with its
+  own infinity.
+- **The white hole** (`U, V < 0`): the black hole run backwards in time.
+  It starts at a past singularity, and everything inside it must leave.
+
+To see which regions can talk to each other, work out where a signal can go.
+A signal travels on a **causal** path, one with `ds² ≤ 0` at every step. In
+Kruskal coordinates, with `Ω² = (32M³/r) e^(−r/2M) > 0`:
+
+```markdown marimo
+$$ds^2 = -\Omega^2\,dU\,dV \le 0
+\quad\Longleftrightarrow\quad dU\,dV \ge 0$$
+```
+
+So along a causal path, `dU` and `dV` always have the same sign. A path
+heading into the future has `T = (U + V)/2` increasing, which means both are
+non-negative. **Along any signal, `U` and `V` never decrease.**
+
+The converse also holds. Any point with `U ≥ U₀` and `V ≥ V₀` can be reached by
+following a light ray of constant `V` and then one of constant `U`. So the
+**causal future** of an event `(U₀, V₀)`, everything it can influence, is
+exactly the quadrant
+
+```markdown marimo
+$$J^+(U_0, V_0) = \{\, U \ge U_0,\; V \ge V_0,\; UV < 1 \,\}$$
+```
+
+The causal past is the opposite quadrant. Adding angular motion contributes
+`+r² dΩ² ≥ 0` to `ds²`, which only makes a path harder to keep causal, so it
+can't reach anything extra. Pick a starting point:
+
+```python marimo echo=true output=false
+def causal_masks(U0, V0, f, n=500):
+    """Grid of points in the diagram, plus where (U0, V0) can signal and be signalled from."""
+    p = np.linspace(-0.998, 0.998, n)
+    P, Q = np.meshgrid(p, p)
+    U, V = from_penrose(P, f), from_penrose(Q, f)
+    spacetime = U * V < 1                       # beyond UV = 1 is past the singularity
+    future = spacetime & (U >= U0) & (V >= V0)
+    past = spacetime & (U <= U0) & (V <= V0)
+    return Q - P, Q + P, U, V, future, past
+```
+
+```python marimo output=false
+event = mo.ui.dropdown(
+    options={
+        "our universe": (-1.0, 1.0),
+        "inside the black hole": (0.4, 0.4),
+        "the other universe": (1.0, -1.0),
+        "inside the white hole": (-0.4, -0.4),
+    },
+    value="our universe",
+    label="start a signal from",
+)
+show_past = mo.ui.checkbox(value=False, label="also show what can reach it")
+```
+
+```python marimo
+def _causal(U0, V0, with_past, f):
+    X, Y, U, V, future, past = causal_masks(U0, V0, f)
+    fig, ax = plt.subplots(figsize=(8, 4.4))
+    schwarzschild_frame(ax, f)
+    ax.contourf(X, Y, future.astype(float), levels=[0.5, 1.5], colors=[LIGHT], alpha=0.35)
+    if with_past:
+        ax.contourf(X, Y, past.astype(float), levels=[0.5, 1.5], colors=[PAST], alpha=0.3)
+    ax.plot(*to_penrose(U0, V0, f), "o", color=ACCENT, ms=8)
+    fig.tight_layout()
+
+    regions = {
+        "our universe": (U < 0) & (V > 0),
+        "the black hole": (U > 0) & (V > 0),
+        "the other universe": (U > 0) & (V < 0),
+        "the white hole": (U < 0) & (V < 0),
+    }
+    reach = [name for name, m in regions.items() if (future & m).any()]
+    heard = [name for name, m in regions.items() if (past & m).any()]
+    text = f"Signals from here can reach: **{', '.join(reach)}**."
+    if with_past:
+        text += f" Signals can arrive here from: **{', '.join(heard)}**."
+    return mo.vstack([fig, mo.md(text)])
+
+mo.vstack([mo.hstack([event, show_past], justify="start", gap=2),
+           _causal(*event.value, show_past.value, compactify)])
+```
+
+Work through each option:
+
+- **From our universe**, you can reach our universe and the black hole. You
+  can never reach the other universe or the white hole.
+- **From the other universe**, the result is the mirror image. The two
+  exteriors can't exchange a signal. An observer from each side can jump in and
+  meet inside the black hole, then both reach the singularity shortly after.
+- **From inside the black hole**, the only place to go is further inside.
+- **From the white hole**, you can reach everything. Turn on the second option
+  for the white hole and you'll see that nothing can arrive there except from
+  its own past. It's a region nothing can enter and everything leaves.
+
+**How it's drawn.** The shading is a mask over a 500 × 500 grid of `(p, q)`
+points, converted back to `(U, V)` with `from_penrose` and tested against the
+two inequalities. `contourf` with a single level shades the `True` cells. The
+grid is a grid in the diagram's own null coordinates, so after the 45° rotation
+the shaded areas come out as diamonds with sharp edges. The list of reachable
+regions isn't hard-coded: the code checks which quadrants the mask overlaps.
+
+## The wormhole
+
+At `T = 0`, a slice of constant time runs from the far edge of our universe to
+the far edge of the other one, straight across the middle of the diagram.
+Every point on that slice is outside both horizons. Measuring the radius `r`
+along it gives the shape of space at that moment: a tube that narrows to a
+throat at `r = 2M` and widens again on the other side. This is the
+Einstein–Rosen bridge.
+
+It changes with time. Move the slice forward:
+
+```python marimo output=false
+slice_T = mo.ui.slider(0, 1.4, step=0.02, value=0, label="Kruskal time T", full_width=True)
+```
+
+```python marimo
+def _bridge(T0, f):
+    fig, (left, right) = plt.subplots(1, 2, figsize=(9, 3.8), gridspec_kw={"width_ratios": [1.4, 1]})
+    schwarzschild_frame(left, f)
+
+    Xs = np.sinh(np.linspace(-14, 14, 4000))
+    Us, Vs = T0 - Xs, T0 + Xs
+    cut = Us * Vs >= 1
+    Us[cut], Vs[cut] = np.nan, np.nan
+    left.plot(*to_penrose(Us, Vs, f), color=LIGHT, lw=2.2)
+
+    X = np.linspace(-4, 4, 1601)
+    uv = T0**2 - X**2
+    r = np.where(uv < 1, radius(np.minimum(uv, 1 - 1e-12)), np.nan)
+    right.fill_between(X, -r, r, color=LIGHT, alpha=0.3, lw=0)
+    right.plot(X, r, color=LIGHT, lw=1.5)
+    right.plot(X, -r, color=LIGHT, lw=1.5)
+    right.axhline(2 * M, color=INK, lw=0.8, ls="--")
+    right.axhline(-2 * M, color=INK, lw=0.8, ls="--")
+    right.set_xlim(-4, 4)
+    right.set_ylim(-6.5, 6.5)
+    right.set_xlabel("position along the slice (Kruskal X)", color=INK)
+    right.set_ylabel("radius r / M", color=INK)
+    right.tick_params(colors=INK)
+    for spine in right.spines.values():
+        spine.set_color(FAINT)
+    right.set_title("shape of space at this moment", color=INK)
+    fig.tight_layout()
+
+    if T0 < 1:
+        msg = f"Throat radius: **{radius(np.array([T0**2]))[0]:.2f}M**. The two universes are connected."
+    else:
+        msg = "The throat has reached **r = 0**. The slice now hits the singularity, and the two universes are disconnected."
+    return mo.vstack([fig, mo.md(msg)])
+
+mo.vstack([slice_T, _bridge(slice_T.value, compactify)])
+```
+
+The math behind the tube, step by step:
+
+1. On the slice `T = T₀`, `U = T₀ − X` and `V = T₀ + X`, so
+   `UV = T₀² − X²`.
+2. `r` decreases as `UV` increases (step 4 above). So the narrowest point is
+   where `UV` is largest, at `X = 0`, where `UV = T₀²`.
+3. The throat radius therefore solves
+
+```markdown marimo
+$$\left(1 - \frac{r_{\text{throat}}}{2M}\right)e^{r_{\text{throat}}/2M} = T_0^2$$
+```
+
+4. Check the endpoints. At `T₀ = 0`, the left side is zero, so
+   `r_throat = 2M`. At `T₀ = 1`, the left side equals 1, which happens only at
+   `r_throat = 0`, the singularity.
+5. For `T₀ > 1`, every point with `X² < T₀² − 1` has `UV > 1`. Those points
+   are beyond the singularity and not part of spacetime, so the slice breaks in
+   two.
+
+So the throat is widest (`2M`) at `T = 0`, shrinks as `T` increases, and
+pinches off at `T = 1`. After that the two universes aren't connected. Running
+`T` backwards gives the same thing in reverse: the bridge opens out of the past
+singularity and closes into the future one.
+
+The bridge is real geometry, but you can't travel through it. Getting from our
+universe (`U < 0 < V`) to the other one (`U > 0 > V`) means `V` must go from
+positive to negative. The previous section showed that `V` never decreases
+along a signal. Put physically: the throat closes before light can cross it,
+and anything that tries ends up in the black hole.
+
+**How it's drawn.** A slice of constant `T` is a horizontal line in the
+`(T, X)` plane, so the code builds it as `U = T − X`, `V = T + X` and blanks
+every point where `UV ≥ 1` by setting it to `NaN`. Matplotlib leaves a gap
+wherever it finds a `NaN`. That's why, past `T = 1`, the orange slice breaks
+into two pieces with no extra code.
+
+The radius comes from `radius()`, which inverts `UV = (1 − r/2M) e^(r/2M)`.
+That equation has no inverse in elementary functions. The exact inverse is
+`r = 2M (1 + W(−UV/e))`, where `W` is the Lambert W function, but using it
+would mean loading scipy into the browser. The left side is monotonic in `r`,
+so bisection works instead:
+
+1. Bracket the answer between `r/2M = 0` and `60`.
+2. Evaluate at the midpoint.
+3. Keep whichever half contains the root.
+
+Each round halves the bracket, so 80 rounds shrink it by `2⁻⁸⁰`, well past
+machine precision. Run on numpy arrays, this solves every point on the slice
+at once.
+
+## Charged and rotating black holes
+
+Add electric charge (the Reissner–Nordström solution) or spin (the Kerr
+solution) and the extended diagram doesn't close off at a singularity. Inside
+the black hole there is a second, inner horizon. Past it, the singularity is a
+vertical line, not a horizontal one, so it's possible to avoid it. Continuing
+the solution takes you out through a white hole into a *new* exterior universe.
+That universe has its own black hole, which leads to another, and the diagram
+repeats upward without end: an infinite chain of universes, each reachable from
+the one before it.
+
+## Which parts are real
+
+Almost none of the extended structure describes black holes that actually
+exist.
+
+- **A black hole formed from a collapsing star has no white hole and no other
+  universe.** The star's surface cuts across the diagram, and the region inside
+  the star is ordinary matter, not vacuum. Only our universe, the black hole
+  and the future singularity survive. Everything else on the left and bottom of
+  the diagram is replaced.
+- **White holes are unstable.** Matter falling toward one piles up just outside
+  its horizon with ever-increasing energy, and the white hole collapses into a
+  black hole.
+- **The inner horizons of charged and rotating holes are unstable too.**
+  Radiation falling in gets blueshifted without limit at the inner horizon. In
+  the calculations, this turns the inner horizon into a singularity of its own
+  ("mass inflation"), which cuts off the chain of universes.
+
+The full Schwarzschild diagram is an exact solution of Einstein's equations
+taken to its logical end. It shows what the theory permits, not what nature
+built.
+
+## A note on shape
+
+If you changed `compactify` earlier, look at the singularities. With `arctan`
+they're flat, because `arctan(U) + arctan(1/U) = π/2`, so the curve `UV = 1`
+lands on a straight line. Other functions bend them. The shape of a Penrose
+diagram is a drawing convention. What counts as physics is what stays fixed:
+which lines are at 45°, and which regions can send signals to which.
