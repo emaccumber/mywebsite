@@ -197,7 +197,7 @@ const currentPath = Astro.url.pathname;
     const newTheme = isDark ? 'light' : 'dark';
     
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
-    localStorage.setItem('theme', newTheme);
+    localStorage.setItem('theme', newThem);
     updateToggleText();
   }
 
