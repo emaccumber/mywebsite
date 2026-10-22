@@ -286,3 +286,29 @@ const optimizedPoster = await getImage({
 - Ensure remote image domains are configured in astro.config.mjs
 
 Source: MDN Web Docs - HTML Video Element, Astro Docs - Images
+## mdx-marimo (interactive marimo cells in MDX)
+
+Source: https://marimo.io/blog/marimo-anywhere and https://github.com/marimo-team/mdx-marimo (docs/api)
+
+### Setup (Astro)
+- `npm install @marimo-team/mdx-marimo`. The package bundles `uv` (via `@manzt/uv`) so the build can run Python itself.
+- Add the remark plugin to the MDX integration: `mdx({ remarkPlugins: [remarkMarimo] })` (import from `@marimo-team/mdx-marimo/remark`).
+- In each MDX page that uses marimo, load the styles and browser runtime:
+```mdx
+import "@marimo-team/mdx-marimo/styles.css";
+import marimoRuntimeUrl from "@marimo-team/mdx-marimo/element/auto?url";
+
+<script type="module" src={marimoRuntimeUrl}></script>
+```
+- At build time the cells run once and their output is written into the HTML. In the browser, Pyodide hydrates them into one reactive notebook.
+
+### Authoring
+- All `python marimo` fences on a page share ONE notebook (dataflow across cells, MDX prose in between).
+- Declare packages once per page with a `marimo-config` fence: `dependencies = ["numpy", "matplotlib"]`.
+- `markdown marimo` fences render marimo Markdown (supports `$$...$$` LaTeX via KaTeX).
+- Fence options: `echo=true` (show source), `output=false` (hide output), `editor=true` (reader-editable code; run with Ctrl/Cmd+Enter), `hide-code`, `eval=false`.
+- A UI element's `.value` can't be read in the cell that defines it. Define sliders in one cell (`output=false`) and display and use them in another.
+
+### Styling
+- Theme follows the `dark` class on `<html>` automatically (`auto` mode).
+- Override with `--marimo-island-*` CSS custom properties (background, foreground, accent, border, ...).

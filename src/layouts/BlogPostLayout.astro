@@ -20,7 +20,8 @@ const pubDate = new Date(frontmatter.pubDate);
 const formattedDate = pubDate.toLocaleDateString('en-US', {
   year: 'numeric',
   month: 'long',
-  day: 'numeric'
+  day: 'numeric',
+  timeZone: 'UTC'
 });
 ---
 
@@ -138,6 +139,24 @@ const formattedDate = pubDate.toLocaleDateString('en-US', {
   .content :global(pre code) {
     background: none;
     padding: 0;
+  }
+
+  .content :global(table) {
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.85rem;
+  }
+
+  .content :global(th),
+  .content :global(td) {
+    padding: 0.4rem 0.75rem;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+  }
+
+  html.dark .content :global(th),
+  html.dark .content :global(td) {
+    border-bottom-color: #333;
   }
 
   .content :global(strong) {

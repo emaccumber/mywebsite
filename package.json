@@ -12,6 +12,7 @@
   "dependencies": {
     "@astrojs/mdx": "^4.3.0",
     "@fontsource/inter": "^5.2.6",
+    "@marimo-team/mdx-marimo": "^0.0.5",
     "astro": "^5.11.0"
   }
 }
